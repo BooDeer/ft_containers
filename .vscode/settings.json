@@ -1,0 +1,20 @@
+{
+	"files.associations": {
+		"deque": "cpp",
+		"iterator": "cpp",
+		"stack": "cpp",
+		"vector": "cpp",
+		"__functional_base": "cpp",
+		"__locale": "cpp",
+		"__node_handle": "cpp",
+		"__split_buffer": "cpp",
+		"bitset": "cpp",
+		"iosfwd": "cpp",
+		"istream": "cpp",
+		"ostream": "cpp",
+		"sstream": "cpp",
+		"string": "cpp",
+		"__config": "cpp",
+		"memory": "cpp"
+	}
+}
