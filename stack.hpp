@@ -18,4 +18,18 @@ template <class T, class Container = std::deque<T>
 		container_type c; //* The underlying container.
 	protected:
 
+	//! Member functions.
+	public:
+		bool		empty() const{
+			return c.empty();
+		}
+		size_type	size() const{
+			return c.size();
+		}
+		value_type&	top(){
+			return c.top();
+		}
+		const value_type& top() const{
+			return c.top();
+		}
 };
