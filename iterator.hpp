@@ -4,11 +4,11 @@
 
 
 
-
-
+//! The below iterators (Base iterator and iterator_traits) are not mandatory, but needed in the subject
+//* The base class for all the iterators.
 // template <class Category, class T, class Distance = ptrdiff_t,
 //           class Pointer = T*, class Reference = T&>
-//   struct iterator {
+//   struct iteratorBase {
 //     typedef T         value_type;
 //     typedef Distance  difference_type;
 //     typedef Pointer   pointer;
@@ -17,8 +17,18 @@
 //   };
 
 
-// template<class Iterator>
+// template<class T>
 // struct iterator_traits
+// {
+// 	typedef typename T::difference_type		difference_type;
+// 	typedef typename T::value_type			value_type;
+// 	typedef typename T::pointer				pointer;
+// 	typedef typename T::reference			reference;
+// 	typedef typename T::iterator_category	iterator_category;
+// };
+
+// template<class T>
+// struct iterator_traits<T *>
 // {
 // 	typedef typename Iterator::difference_type		difference_type;
 // 	typedef typename Iterator::value_type			value_type;
@@ -29,6 +39,8 @@
 
 
 
+// template <class Category, class T, class Distance = ptrdiff_t,
+//           class Pointer = T*, class Reference = T&>
 
 template <class _Iter>
 class	iterator
@@ -36,18 +48,18 @@ class	iterator
 	public:
 		typedef _Iter														iterator_type;
 		//TODO: requires iterator_traits class to be implemented
-		// typedef typename iterator_traits<iterator_type>::iterator_category	iterator_category;
-		// typedef typename iterator_traits<iterator_type>::value_type			value_type;
-		// typedef typename iterator_traits<iterator_type>::difference_type	difference_type;
-		// typedef typename iterator_traits<iterator_type>::pointer			pointer;
-		// typedef typename iterator_traits<iterator_type>::reference			reference;
+		typedef std::random_access_iterator_tag								iterator_category;
+		typedef _Iter														value_type;
+		typedef ptrdiff_t													difference_type;
+		typedef _Iter*														pointer;
+		typedef _Iter&														reference;
 
 	//! The canonical form.
 	public:
 		//* Default constructor.
 		iterator( void ): __Ptr(nullptr) {};
 		//* Constructor with a parameter. (The pointer to array (mainly when you call iterator begin() in the vector class))
-		iterator( const iterator_type ptr): __Ptr(ptr) {};
+		iterator( pointer ptr ): __Ptr(ptr) {};
 		//* Copy constructor.
 		iterator(const iterator& src) {
 			*this = src;
@@ -64,19 +76,57 @@ class	iterator
 
 	//! The public operators.
 	public:
-		// bool	operator==(const Iterator& rhs) const
-		// {
-		// };
-		// bool	operator!=(const Iterator& rhs) const;
-		iterator_type operator*(const iterator& rhs) const
+		bool	operator==(const iterator& rhs) const
+		{
+			return (*__Ptr == *(rhs.__Ptr)) ? true : false;
+		};
+		bool	operator!=(const iterator& rhs) const
+		{
+			return (*__Ptr == *(rhs.__Ptr)) ? false : true;
+		};
+		reference operator*() const
 		{
 			return *__Ptr;
 		};
-		// /*xxx*/ operator->(const Iterator& rhs) const;
-		// //TODO: operator "*a = t"
-		// //TODO: operators: "++a, a++, --a, a--"
-		// /*xxx*/ operator++(const Iterator& rhs) const;
-		// //TODO: operators: "a +/- b" "b +/- a" ps: (+ or -)
+		pointer operator->() const
+		{
+			return __Ptr;
+		};
+		//TODO: operator "*a = t"
+		reference	operator*(iterator_type) //? lvalue can be overloaded the same way you overload pre increment operator. (++a)
+		{
+			return __Ptr;
+		}
+		//TODO: operators: "++a, a++, --a, a--"
+		iterator	operator++(int)
+		{
+			iterator tmp;
+			tmp.__Ptr = __Ptr++;
+			return tmp;
+		}
+		iterator	operator++( )
+		{
+			iterator tmp;
+			tmp.__Ptr = ++__Ptr;
+			return tmp;
+		}
+		iterator	operator--(int)
+		{
+			iterator tmp;
+			tmp.__Ptr = __Ptr--;
+			return tmp;
+		}
+		iterator	operator--( )
+		{
+			iterator tmp;
+			tmp.__Ptr = --__Ptr;
+			return tmp;
+		}		
+		//TODO: operators: "a +/- b" "b +/- a" ps: (+ or -)
+		iterator	operator+(const int rhs) const
+		{
+
+		}
 		// /*xxx*/ operator+(const Iterator& rhs) const;
 		// bool	operator<(const Iterator& rhs) const;
 		// bool	operator<=(const Iterator& rhs) const;
@@ -87,5 +137,14 @@ class	iterator
 		//TODO: operator: a[n]
 
 	private:
-		iterator_type			__Ptr;
+		pointer			__Ptr;
 };
+
+
+/* 
+
+int a = 110;
+a;
+int b = function(std::string("test")); // &a;
+
+*/
