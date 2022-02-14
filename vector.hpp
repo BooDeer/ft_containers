@@ -2,7 +2,7 @@
 
 #include <iostream>
 #include <memory>
-
+#include "iterator.hpp"
 namespace ft{
 
 	template < class T, class Alloc = std::allocator<T> > class vector
@@ -19,7 +19,7 @@ namespace ft{
 			typedef	typename allocator_type::pointer				pointer;			//* Pointer to the allocated object. (Equal to T*)
 			typedef	typename allocator_type::const_pointer			const_pointer;		//* Const pointer to the allocated object. (Equal to const T*)
 			// //TODO: implement the iterators to be used.
-			// typedef	iterator<pointer>								iterator;
+			typedef	iterator<pointer>								iterator;
 			// typedef	iterator<const_pointer>							const_iterator;
 			// typedef													reverse_iterator;
 			// typedef	xxx												const_reverse_iterator;
@@ -45,7 +45,7 @@ namespace ft{
 				__Vec = __Alloc.allocate(n);
 				for (int i = 0; i < n; i++)
 					__Alloc.construct(__Vec + i, val);
-				LOG(__Vec[3]);
+				// LOG(__Vec[3]);
 			};
 
 			//* The range constructor.
@@ -73,6 +73,10 @@ namespace ft{
 		//! Iterator member functions.
 		public:
 			//TODO
+			iterator begin()
+			{
+				return iterator(__Vec);
+			}
 		//!=========================================
 
 		//! Capacity member functions.
