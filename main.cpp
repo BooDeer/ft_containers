@@ -6,7 +6,7 @@
 /*   By: hboudhir <hboudhir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/08 14:54:59 by hboudhir          #+#    #+#             */
-/*   Updated: 2022/02/12 19:06:15 by hboudhir         ###   ########.fr       */
+/*   Updated: 2022/02/14 10:58:18 by hboudhir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,17 +58,23 @@ int main( void )
 {
 	
 	LOG("\n\n=============================== STD::MAP  ================================\n\n");
-	ft::vector<std::string>	test(5, "tet");
+	ft::vector<int>	test(5, 10);
 	
+	ft::vector<int>::iterator it;
+
+	it = test.begin();
+	// std::cout << it << std::endl;
 	LOG(test.max_size());
 
 	
 	LOG("============================== STD::VECTOR  ==============================\n\n");
-	std::vector<int> testV(3, 5);
+	std::vector<int>	testV(5,10);
+	std::vector<int>::iterator it1;
 
-	testV.assign(1, 1);
-	LOG(!testV.empty());
+	it1 = testV.begin();
 
+	LOG(*it1);
+	LOG(testV.max_size());
 
 
 
