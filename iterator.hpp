@@ -123,10 +123,23 @@ class	iterator
 			return tmp;
 		}		
 		//TODO: operators: "a +/- b" "b +/- a" ps: (+ or -)
-		iterator	operator+(const int rhs) const
+		//! Currently implementing the below operators.
+		iterator	operator+(const int& rhs) const
 		{
-
+			return __Ptr + rhs;
 		}
+		
+		iterator	operator+(const int& lhs, const iterator& rhs) const
+		{
+			return __Ptr + lhs;
+		}
+		
+		iterator	operator-(const int& rhs) const
+		{
+			return __Ptr - rhs;
+		}
+		
+		iterator	operator-(const int&)
 		// /*xxx*/ operator+(const Iterator& rhs) const;
 		// bool	operator<(const Iterator& rhs) const;
 		// bool	operator<=(const Iterator& rhs) const;
