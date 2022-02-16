@@ -72,16 +72,26 @@ class	iterator
 		//* Destructor.
 		~iterator( void ) {};
 	//! ================================
+		pointer	base()
+		{
+			return __Ptr;
+		}
+	//! Public methods.
 
+	//! ================================
+	
 	//! The public operators.
 	public:
-		bool	operator==(const iterator& rhs) const
+		template <typename iter1, typename iter2>
+		friend bool	operator==(iterator<iter1>& lhs,iterator<iter2>& rhs)
 		{
-			return (*__Ptr == *(rhs.__Ptr)) ? true : false;
+			return (*(lhs.base()) == *(rhs.base())) ? true : false;
 		};
-		bool	operator!=(const iterator& rhs) const
+
+		template <typename iter1, typename iter2>
+		friend bool	operator!=(iterator<iter1>& lhs, iterator<iter2>& rhs)
 		{
-			return (*__Ptr == *(rhs.__Ptr)) ? false : true;
+			return (*(lhs.base()) == *(rhs.base())) ? false : true;
 		};
 		reference operator*() const
 		{
@@ -91,12 +101,12 @@ class	iterator
 		{
 			return __Ptr;
 		};
-		//TODO: operator "*a = t"
 		reference	operator*(iterator_type) //? lvalue can be overloaded the same way you overload pre increment operator. (++a)
 		{
 			return __Ptr;
 		}
-		//TODO: operators: "++a, a++, --a, a--"
+
+		//! Arithmetic operators.
 		iterator	operator++(int)
 		{
 			iterator tmp;
@@ -121,11 +131,15 @@ class	iterator
 			tmp.__Ptr = --__Ptr;
 			return tmp;
 		}		
-		//TODO: operators: "a +/- b" "b +/- a" ps: (+ or -)
-		//! Currently implementing the below operators.
 		iterator	operator+(const int& rhs) const
 		{
 			return iterator(__Ptr + rhs);
+		}
+		template <typename iter>
+		friend iterator<iter>	operator+(typename iterator<iter>::difference_type __n, iterator<iter>__x)
+		{
+			__x = __x + __n;
+			return __x;
 		}
 		
 		iterator	operator-(const int& rhs) const
@@ -133,25 +147,48 @@ class	iterator
 			return iterator(__Ptr - rhs);
 		}
 
-		iterator	operator
-		//TODO: see how to implement the following expression (<int> +/- <iter>)
-		// iterator	operator-(const int&)
-		// /*xxx*/ operator+(const Iterator& rhs) const;
-		// bool	operator<(const Iterator& rhs) const
-		// {
-		// 	return ()
-		// };
+		template <typename iter>
+		friend iterator<iter>	operator-(typename iterator<iter>::difference_type __n, iterator<iter>__x)
+		{
+			__x = __x - __n;
+			return __x;
+		}
 
-		// bool	operator<=(const Iterator& rhs) const
-		// {
+		template <typename iter>
+		friend ptrdiff_t operator-(iterator<iter> __f, iterator<iter> __s)
+		{
+			return (__f - __s);
+		}
 
-		// };
+		void	operator+=(const int& __n) { __Ptr = __Ptr + __n; }
+		
+		void	operator-=(const int& __n) { __Ptr = __Ptr - __n; }
+		//! ================================
+		
+		//! Comparison operators.
+		template <typename iter>		
+		friend bool	operator<(iterator<iter>& lhs, iterator<iter>& rhs)
+		{
+			return (*(lhs.base()) < *(rhs.base()) ? true : false);
+		};
 
-		// bool	operator>(const Iterator& rhs) const;
-		// bool	operator>=(const Iterator& rhs) const;
-		// Iterator&	operator+=(const Iterator &rhs) const;
-		// Iteraotr&	operator--(const Iterator &rhs) const;
-		//TODO: operator: a[n]
+		template <typename iter>		
+		friend bool	operator<=(iterator<iter>& lhs, iterator<iter>& rhs)
+		{
+			return (*(lhs.base()) <= *(rhs.base()) ? true : false);
+		};
+		
+		template <typename iter>		
+		friend bool	operator>(iterator<iter>& lhs, iterator<iter>& rhs)
+		{
+			return (*(lhs.base()) > *(rhs.base()) ? true : false);
+		};
+		template <typename iter>		
+		friend bool	operator>=(iterator<iter>& lhs, iterator<iter>& rhs)
+		{
+			return (*(lhs.base()) >= *(rhs.base()) ? true : false);
+		};
+		//! ================================
 		reference	operator[](int i) const
 		{
 			return (__Ptr[i]);
@@ -160,13 +197,3 @@ class	iterator
 	private:
 		pointer			__Ptr;
 };
-
-// template<typename T>
-
-/* 
-
-int a = 110;
-a;
-int b = function(std::string("test")); // &a;
-
-*/
