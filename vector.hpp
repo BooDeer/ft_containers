@@ -24,6 +24,8 @@ namespace ft{
 			//! Typedefs only create a new alias for an existing type, you need to create a variable to hold that type before using it
 
 			typedef T												value_type; 		//* First parametre of the templated class. (T)
+			typedef const T											const_value_type; 		//* First parametre of the templated class. (T)
+
 			typedef Alloc											allocator_type; 	//* Second parametre of the templated class. (Alloc used to allocate memory)
 			typedef	typename allocator_type::reference				reference; 			//* Reference to the allocator_type. (Equal to T&)
 			typedef	typename allocator_type::const_reference		const_reference;	//* Const reference to the allocator_type. (Equal to const T&)
@@ -31,8 +33,8 @@ namespace ft{
 			typedef	typename allocator_type::const_pointer			const_pointer;		//* Const pointer to the allocated object. (Equal to const T*)
 			// //TODO: implement the iterators to be used.
 			typedef	random_access_iterator<value_type>									iterator;
-			typedef random_access_iterator<const value_type>							const_iterator;
-			// typedef													reverse_iterator;
+			typedef random_access_iterator<const_value_type>							const_iterator;
+			// typedef random_reverse_iterator<value_type>												reverse_iterator;
 			// typedef	xxx												const_reverse_iterator;
 			// typedef	xxx												difference_type;
 			// //TODO <=======================================>
@@ -85,7 +87,9 @@ namespace ft{
 			~vector( void )
 			{
 				//TODO: implement the fucking destructor.
-
+				for (int i = 0; i < __Size; i++)
+					__Alloc.destroy(__Vec + i);
+				__Alloc.deallocate(__Vec, __Capacity);
 			};
 		//!=========================================
 
@@ -96,11 +100,13 @@ namespace ft{
 			{
 				return iterator(__Vec);
 			}
+			const_iterator begin() const { return const_iterator(__Vec); }
 
 			iterator	end()
 			{
 				return iterator(__Vec + __Size);
 			}
+			const_iterator end() const { return const_iterator(__Vec + __Size); }
 		//!=========================================
 
 		//! Capacity member functions.
