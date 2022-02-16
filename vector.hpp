@@ -3,8 +3,19 @@
 #include <iostream>
 #include <memory>
 #include "iterator.hpp"
+
+
+
 namespace ft{
 
+	template<bool Cond, typename T = void>
+	struct	enable_if{};
+	
+	template<typename T>
+	struct	enable_if<true, T>
+	{
+		typedef T type;
+	};
 	template < class T, class Alloc = std::allocator<T> > class vector
 	{
 		//! Member types.
@@ -28,41 +39,49 @@ namespace ft{
 			typedef	size_t											size_type;
 		// Public--<end>
 		//!=========================================
+
+
+
 		//! Orthodox canonical form (Member functions)
+
 		public:
 		  	//* The default constructor.
 			explicit vector( const allocator_type& alloc = allocator_type() ): __Vec(nullptr),
-																	__Size(0), __Capacity(0), __Alloc(alloc)
-			{
-				//TODO: set the values to default ( 0/nullptr )
-			};
+																	__Size(0), __Capacity(0), __Alloc(alloc) { };
 
 			//* The fill constructor.
 			explicit vector(size_type n, const value_type& val = value_type()
 					, const allocator_type& alloc = allocator_type() ): __Vec(nullptr),
 																	__Size(0), __Capacity(n), __Alloc(alloc)
 			{
-				__Vec = __Alloc.allocate(n);
-				for (int i = 0; i < n; i++)
-					__Alloc.construct(__Vec + i, val);
-				// LOG(__Vec[3]);
+				this->assign(n, val);
 			};
 
 			//* The range constructor.
 			//TODO: implement the range constructor.
-			// template <class InputIterator>
-        	// vector (InputIterator first, InputIterator last,
-            //     	const allocator_type& alloc = allocator_type());
+			template <class InputIterator>
+        	vector (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type(),
+							typename std::enable_if<!std::is_integral<InputIterator>::value, InputIterator>::type* = nullptr)
+							: __Vec(nullptr), __Size(0), __Alloc(alloc)
+			{
+				__Capacity = std::distance(first, last);
+				this->assign(first, last);
+			};
 
 			//* The copy constructor.
-			// vector(const vector& x)
-			// {
-			// 	//TODO: implement the assignement operator.
-			// 	*this = x;
-			// }
+			vector(const vector& x)
+			{
+				//TODO: implement the assignement operator.
+				*this = x;
+			}
 
 			// vector(const vector& src);
-			// vector& operator=(const vector& rhs);
+			vector& operator=(const vector& rhs)
+			{
+				this->assign(rhs.__Size, *(rhs.__Vec));
+				
+				return *this;
+			};
 			~vector( void )
 			{
 				//TODO: implement the fucking destructor.
@@ -73,9 +92,14 @@ namespace ft{
 		//! Iterator member functions.
 		public:
 			//TODO
-			iterator begin()
+			iterator	begin()
 			{
 				return iterator(__Vec);
+			}
+
+			iterator	end()
+			{
+				return iterator(__Vec + __Size);
 			}
 		//!=========================================
 
@@ -112,16 +136,16 @@ namespace ft{
 
 		//! Modifiers member functions.
 		// public:
-			void			clear()
+		void			clear()
+		{
+			for (int i = 0; i < __Size; i++)
 			{
-				for (int i = 0; i < __Size; i++)
-				{
-					__Alloc.destroy(__Vec[i]);
-				}
-				__Size = 0;
-				//TODO: Decide whether I reallocate memory for the container or not. (IMO it's better to reallocate to not waste space)
-				//TODO: https://www.cplusplus.com/reference/vector/vector/assign/ "This causes an automatic reallocation of the allocated storage space if -and only if- the new vector size surpasses the current vector capacity."
-			};
+				__Alloc.destroy(__Vec + i);
+			}
+			__Size = 0;
+			//TODO: Decide whether I reallocate memory for the container or not. (IMO it's better to reallocate to not waste space)
+			//TODO: https://www.cplusplus.com/reference/vector/vector/assign/ "This causes an automatic reallocation of the allocated storage space if -and only if- the new vector size surpasses the current vector capacity."
+		};
 		// 	void			swap(Vector& x);
 		// 	iterator		erase(iterator position);
 		// 	iterator		erase(iterator first, iterator last);
@@ -131,34 +155,60 @@ namespace ft{
 		// 	void			insert(iterator position, InputIterator first, InputIterator last);
 		// 	void			pop_back();
 		// 	void			push_back(const value_type& val);
-		// 	template<class InputIterator>
-		// 	void			assign(InputIterator first, InputIterator last);
-			void			assign(size_type n, const value_type &val)
-			{
-				this->clear();
-				//TODO: check if there's enough storage space, otherwise allocate new memory.
-				if (n >= __Capacity)
-				{
-					//TODO:
-				}
+		template<class InputIterator>
+		void			assign(InputIterator first, InputIterator last)
+		{
+			std:ptrdiff_t distance = last - first;
 
-				//
-				for (int i = 0; i < n; i++)
-				{
-					__Alloc.construct(__Vec[i], val);
-				}
-			};
+			this->clear();
+			LOG("==================>" << distance);
+			if (distance >= __Capacity)
+			{
+				__Alloc.deallocate(__Vec, __Capacity);
+				__Capacity *= 2;
+				__Vec = __Alloc.allocate(__Capacity);
+			}
+
+			for (int i = 0; i < distance; i++)
+				__Alloc.construct(__Vec + i, first + i);
+			__Size = distance;
+		};
+		
+		//* Assigns new contents to the vector, replacing its current contents, and modifying its size accordingly.
+		void			assign(size_type n, const value_type &val)
+		{
+			this->clear();
+			//* If there isn't enough storage allocated, reallocating enough space.
+			//? Is multiplying the already existing capacity by two a good idea?
+			if (n >= __Capacity)
+			{
+				__Alloc.deallocate(__Vec, __Capacity);
+				__Capacity *= 2;
+				__Vec = __Alloc.allocate(__Capacity);
+			}
+
+			//* Filling the vector with the new values.
+			for (int i = 0; i < n; i++)
+			{
+				__Alloc.construct(__Vec + i, val);
+			}
+			__Size = n;
+		};
 		//!=========================================
 
 		//! Allocator member function
-		// public:
-		// 	allocator_type get_allocator() const;
+		public:
+			//? Not sure if this is correct or not, to be checked later :D
+			allocator_type get_allocator() const
+			{
+				return allocator_type(__Alloc);
+			};
 
 
 		private:
 			pointer			__Vec;				//* The array of elements.
 			size_t			__Size;				//* The current size of the vector, meaning how many elements currently holding.
 			size_t			__Capacity;			//* The maximum size allocated for the vector.
-			allocator_type	__Alloc;				//* The allocator to be used
+			allocator_type	__Alloc;			//* The allocator to be used
 	};
 }
