@@ -46,7 +46,7 @@ template <class _Iter>
 class	iterator
 {
 	public:
-		typedef _Iter														iterator_type;
+		typedef _Iter														iterator_type; //* The received value, such as int.
 		//TODO: requires iterator_traits class to be implemented
 		typedef std::random_access_iterator_tag								iterator_category;
 		typedef _Iter														value_type;
@@ -67,7 +67,6 @@ class	iterator
 		//* Assignement operator.
 		iterator& operator=(const iterator& rhs) {
 			this->__Ptr = rhs.__Ptr;
-			LOG("Passing: " << __Ptr[0]);
 			return *this;
 		};
 		//* Destructor.
@@ -126,33 +125,43 @@ class	iterator
 		//! Currently implementing the below operators.
 		iterator	operator+(const int& rhs) const
 		{
-			return __Ptr + rhs;
-		}
-		
-		iterator	operator+(const int& lhs, const iterator& rhs) const
-		{
-			return __Ptr + lhs;
+			return iterator(__Ptr + rhs);
 		}
 		
 		iterator	operator-(const int& rhs) const
 		{
-			return __Ptr - rhs;
+			return iterator(__Ptr - rhs);
 		}
-		
-		iterator	operator-(const int&)
+
+		iterator	operator
+		//TODO: see how to implement the following expression (<int> +/- <iter>)
+		// iterator	operator-(const int&)
 		// /*xxx*/ operator+(const Iterator& rhs) const;
-		// bool	operator<(const Iterator& rhs) const;
-		// bool	operator<=(const Iterator& rhs) const;
+		// bool	operator<(const Iterator& rhs) const
+		// {
+		// 	return ()
+		// };
+
+		// bool	operator<=(const Iterator& rhs) const
+		// {
+
+		// };
+
 		// bool	operator>(const Iterator& rhs) const;
 		// bool	operator>=(const Iterator& rhs) const;
 		// Iterator&	operator+=(const Iterator &rhs) const;
 		// Iteraotr&	operator--(const Iterator &rhs) const;
 		//TODO: operator: a[n]
+		reference	operator[](int i) const
+		{
+			return (__Ptr[i]);
+		};
 
 	private:
 		pointer			__Ptr;
 };
 
+// template<typename T>
 
 /* 
 
