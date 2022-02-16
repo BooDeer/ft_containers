@@ -45,6 +45,8 @@
 template <class _Iter>
 class	random_access_iterator
 {
+	private:
+		typedef	random_access_iterator<const _Iter>							const_iterator;
 	public:
 		typedef _Iter														iterator_type; //* The received value, such as int.
 		//TODO: requires iterator_traits class to be implemented
@@ -57,9 +59,10 @@ class	random_access_iterator
 	//! The canonical form.
 	public:
 		//* Default constructor.
-		random_access_iterator	( void ): __Ptr(nullptr) {};
+		random_access_iterator( void ): __Ptr(nullptr) {};
 		//* Constructor with a parameter. (The pointer to array (mainly when you call random_access_iterator begin() in the vector class))
-		random_access_iterator( pointer ptr ): __Ptr(ptr) {};
+		random_access_iterator( pointer ptr ): __Ptr(ptr) {
+		};
 		//* Copy constructor.
 		random_access_iterator(const random_access_iterator& src) {
 			*this = src;
@@ -68,9 +71,14 @@ class	random_access_iterator
 		random_access_iterator& operator=(const random_access_iterator& rhs) {
 			this->__Ptr = rhs.__Ptr;
 			return *this;
-		};
+};
 		//* Destructor.
 		~random_access_iterator( void ) {};
+
+		//? The heck does this do and why and how	
+		operator const_iterator() const{
+	   		return  const_iterator(this->__Ptr);
+		}
 	//! ================================
 		pointer	base()
 		{
