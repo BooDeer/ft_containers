@@ -30,8 +30,8 @@ namespace ft{
 			typedef	typename allocator_type::pointer				pointer;			//* Pointer to the allocated object. (Equal to T*)
 			typedef	typename allocator_type::const_pointer			const_pointer;		//* Const pointer to the allocated object. (Equal to const T*)
 			// //TODO: implement the iterators to be used.
-			typedef	iterator<value_type>								iterator;
-			// typedef	iterator<const_pointer>							const_iterator;
+			typedef	random_access_iterator<value_type>									iterator;
+			typedef random_access_iterator<const value_type>							const_iterator;
 			// typedef													reverse_iterator;
 			// typedef	xxx												const_reverse_iterator;
 			// typedef	xxx												difference_type;
