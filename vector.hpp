@@ -3,7 +3,7 @@
 #include <iostream>
 #include <memory>
 #include "iterator.hpp"
-
+#include "reverse_iterator.hpp"
 
 
 namespace ft{
@@ -34,7 +34,7 @@ namespace ft{
 			// //TODO: implement the iterators to be used.
 			typedef	random_access_iterator<value_type>									iterator;
 			typedef random_access_iterator<const_value_type>							const_iterator;
-			// typedef random_reverse_iterator<value_type>												reverse_iterator;
+			typedef random_reverse_iterator<iterator>									reverse_iterator;
 			// typedef	xxx												const_reverse_iterator;
 			// typedef	xxx												difference_type;
 			// //TODO <=======================================>
@@ -101,12 +101,20 @@ namespace ft{
 				return iterator(__Vec);
 			}
 			const_iterator begin() const { return const_iterator(__Vec); }
+			reverse_iterator	rbegin()
+			{
+				return reverse_iterator(end());
+			}
 
 			iterator	end()
 			{
 				return iterator(__Vec + __Size);
 			}
 			const_iterator end() const { return const_iterator(__Vec + __Size); }
+			reverse_iterator	rend()
+			{
+				return reverse_iterator(begin());
+			}
 		//!=========================================
 
 		//! Capacity member functions.
@@ -136,7 +144,10 @@ namespace ft{
 		// 	const_reference		front() const;
 		// 	reference			at(size_type n);
 		// 	const_reference		at(size_type n) const;
-		// 	reference			operator[](size_type n);
+			reference			operator[](size_type n)
+			{
+				return __Vec[n];
+			};
 		// 	const_reference		operator[](size_type n) const;
 		//!=========================================
 
