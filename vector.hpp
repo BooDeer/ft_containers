@@ -83,11 +83,6 @@ namespace ft{
 			// vector(const vector& src);
 			vector& operator=(const vector& rhs)
 			{
-				// this->assign(rhs.__Size, *(rhs.__Vec));
-				// __Vec		= rhs.__Vec;
-				// __Capacity	= rhs.__Capacity;
-				// __Size		= rhs.__Size;
-				// __Alloc		= rhs.__Alloc;
 				if (__Size > 0)
 				{
 					for (int i = 0; i < __Size; i++)
@@ -168,14 +163,11 @@ namespace ft{
 				if (n > __Capacity)
 				{
 					pointer newVec;
-					if (__Capacity)
-						__Capacity *= 2;
-					else
-						__Capacity = n;
+					__Capacity = n; //? Reserve takes directly the n size. (doesn't multiply the old capacity by 2)
 					newVec = __Alloc.allocate(__Capacity);
 					for(int i = 0; i < __Size; i++)
 					{
-						__Alloc.construct(newVec + i, __Vec + i);
+						__Alloc.construct(newVec + i, *(__Vec + i));
 						__Alloc.destroy(__Vec + i);
 					}
 					if (__Capacity) //? Is it needed to be checked?
@@ -253,7 +245,15 @@ namespace ft{
 			};
 		// 	iterator		erase(iterator position);
 		// 	iterator		erase(iterator first, iterator last);
-		// 	iterator		insert(iterator position, const value_type& val);
+			iterator		insert(iterator position, const value_type& val)
+			{
+				ptrdiff_t	distance;
+
+				distance = position - this->end();
+				this->reserve(__Size + 1);
+				this->assign(__Vec[distance], this->end());
+
+			};
 		// 	void			insert(iterator position, size_type n, const value_type& val);
 		// 	template<class InputIterator>
 		// 	void			insert(iterator position, InputIterator first, InputIterator last);
@@ -267,8 +267,13 @@ namespace ft{
 			{
 				if (__Size + 1 > __Capacity)
 				{
-					__Capacity *= 2;
-					this->reserve(__Capacity);
+					if (!__Capacity)
+						this->reserve(__Size + 1);
+					else
+					{
+						__Capacity *= 2;
+						this->reserve(__Capacity);
+					}
 				}
 				__Alloc.construct(__Vec + __Size, val);
 				__Size++;
@@ -291,7 +296,11 @@ namespace ft{
 				}
 
 				for (int i = 0; i < distance; i++)
+				{
+					if (i < __Size)
+						__Alloc.destroy(__Vec + i);
 					__Alloc.construct(__Vec + i, first + i);
+				}
 				__Size = distance;
 			};
 			
@@ -313,6 +322,8 @@ namespace ft{
 				//* Filling the vector with the new values.
 				for (int i = 0; i < n; i++)
 				{
+					if (i < __Size)
+						__Alloc.destroy(__Vec + i);
 					__Alloc.construct(__Vec + i, val);
 				}
 				__Size = n;
