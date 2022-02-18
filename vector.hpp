@@ -244,15 +244,26 @@ namespace ft{
 				x = tmp;
 			};
 		// 	iterator		erase(iterator position);
-		// 	iterator		erase(iterator first, iterator last);
+			iterator		erase(iterator first, iterator last)
+			{
+				ptrdiff_t distance;
+
+				distance = last - first;
+				if (__Size + distance > __Capacity)
+					this->reserve(__Size + distance);
+				for (int i)
+			};
 			iterator		insert(iterator position, const value_type& val)
 			{
 				ptrdiff_t	distance;
 
 				distance = position - this->end();
-				this->reserve(__Size + 1);
-				this->assign(__Vec[distance], this->end());
-
+				if (__Size + 1 > __Capacity)
+					this->reserve(__Capacity * 2);
+				for (int i = distance; i <= __Size; i++)
+					__Vec[i + 1] = __Vec[i];
+				__Vec[distance] = val;
+				__Size++;
 			};
 		// 	void			insert(iterator position, size_type n, const value_type& val);
 		// 	template<class InputIterator>
