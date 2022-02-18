@@ -95,7 +95,7 @@ class	random_reverse_iterator
 			random_reverse_iterator<iter>(__x.base() + __n);
 		}
 		template <typename iter>
-		friend bool	operator==(const random_reverse_iterator<iter1>& lhs, const random_reverse_iterator<iter2>& rhs)
+		friend bool	operator==(const random_reverse_iterator<iter>& lhs, const random_reverse_iterator<iter>& rhs)
 		{
 			return (*(lhs.__Current.base()) == *(rhs.__Current.base())) ? true : false;
 		};
@@ -106,22 +106,22 @@ class	random_reverse_iterator
 			return (lhs.__Current.base() == rhs.__Current.base()) ? false : true;
 		};
 		template <typename iter>
-		friend bool operator< (const reverse_iterator<iter>& lhs, const random_reverse_iterator<iter>& rhs)
+		friend bool operator< (const random_reverse_iterator<iter>& lhs, const random_reverse_iterator<iter>& rhs)
 		{
 			return (lhs.__Current.base() < rhs.__Current.base()) ? true : false;
 		};
 		template <typename iter>
-		friend bool operator<= (const reverse_iterator<iter>& lhs, const random_reverse_iterator<iter>& rhs)
+		friend bool operator<= (const random_reverse_iterator<iter>& lhs, const random_reverse_iterator<iter>& rhs)
 		{
 			return (lhs.__Current.base() <= rhs.__Current.base()) ? true : false;
 		};
 		template <typename iter>
-		friend bool operator> (const reverse_iterator<iter>& lhs, const random_reverse_iterator<iter>& rhs)
+		friend bool operator> (const random_reverse_iterator<iter>& lhs, const random_reverse_iterator<iter>& rhs)
 		{
 			return (lhs.__Current.base() > rhs.__Current.base()) ? true : false;
 		};
 		template <typename iter>
-		friend bool operator>= (const reverse_iterator<iter>& lhs, const random_reverse_iterator<iter>& rhs)
+		friend bool operator>= (const random_reverse_iterator<iter>& lhs, const random_reverse_iterator<iter>& rhs)
 		{
 			return (lhs.__Current.base() >= rhs.__Current.base()) ? true : false;
 		};
