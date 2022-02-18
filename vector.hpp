@@ -54,9 +54,12 @@ namespace ft{
 			//* The fill constructor.
 			explicit vector(size_type n, const value_type& val = value_type()
 					, const allocator_type& alloc = allocator_type() ): __Vec(nullptr),
-																	__Size(0), __Capacity(n), __Alloc(alloc)
+																	__Size(n), __Capacity(n), __Alloc(alloc)
 			{
-				this->assign(n, val);
+				// this->assign(n, val);
+				__Vec = __Alloc.allocate(n);
+				for(int i = 0; i < n; i++)
+					__Alloc.construct(__Vec + i, val);
 			};
 
 			//* The range constructor.
@@ -71,7 +74,7 @@ namespace ft{
 			};
 
 			//* The copy constructor.
-			vector(const vector& x)
+			vector(const vector& x): __Vec(nullptr), __Size(0), __Capacity(0), __Alloc(allocator_type())
 			{
 				//TODO: implement the assignement operator.
 				*this = x;
@@ -80,8 +83,22 @@ namespace ft{
 			// vector(const vector& src);
 			vector& operator=(const vector& rhs)
 			{
-				this->assign(rhs.__Size, *(rhs.__Vec));
-				
+				// this->assign(rhs.__Size, *(rhs.__Vec));
+				// __Vec		= rhs.__Vec;
+				// __Capacity	= rhs.__Capacity;
+				// __Size		= rhs.__Size;
+				// __Alloc		= rhs.__Alloc;
+				if (__Size > 0)
+				{
+					for (int i = 0; i < __Size; i++)
+						__Alloc.destroy(__Vec + i);
+					__Alloc.deallocate(__Vec, __Capacity);
+				}
+				__Vec = __Alloc.allocate(rhs.__Capacity);
+				for(int i = 0; i < rhs.__Size; i++)
+					__Alloc.construct(__Vec + i, rhs.__Vec[i]);
+				__Size = rhs.__Size;
+				__Capacity = rhs.__Capacity;
 				return *this;
 			};
 			~vector( void )
@@ -123,32 +140,96 @@ namespace ft{
 			{
 				return	this->__Size;
 			};
+
 			size_type	max_size() const //* Returns the maximum allocation possible. (same value as allocate.max_size())
 			{
 				return __Alloc.max_size();
 			};
-			// void		resize(size_type n, value_type val = value_type());
-			// void		reserve(size_type n);
+			void		resize(size_type n, value_type val = value_type())
+			{
+				if (n < __Size)
+				{
+					for (int i = n; i < __Size; i++)
+						__Alloc.destroy(__Vec + i);
+					return ;
+				}
+				else if (n > __Size)
+				{
+					this->reserve(n);
+					for (int i = __Size; i < n; i++)
+						__Alloc.construct(__Vec + i, val);
+				}
+			};
+
+			void		reserve(size_type n)
+			{
+				if (n > this->max_size())
+					throw std::length_error("ft::vector");
+				if (n > __Capacity)
+				{
+					pointer newVec;
+					if (__Capacity)
+						__Capacity *= 2;
+					else
+						__Capacity = n;
+					newVec = __Alloc.allocate(__Capacity);
+					for(int i = 0; i < __Size; i++)
+					{
+						__Alloc.construct(newVec + i, __Vec + i);
+						__Alloc.destroy(__Vec + i);
+					}
+					if (__Capacity) //? Is it needed to be checked?
+						__Vec = newVec;
+				}
+			};
 			bool		empty() const
 			{
 				return __Size ? false : true; //! Still not tested.
 			};
-			// size_type	capacity() const;
+			size_type	capacity() const
+			{
+				return __Capacity;
+			};
 		//!=========================================
 
 		//! Element access member functions.
 		// public:
-		// 	reference			back();
-		// 	const_reference		back() const; //TODO: Search what's the difference between this notation and the one above it.
-		// 	reference			front();
-		// 	const_reference		front() const;
-		// 	reference			at(size_type n);
-		// 	const_reference		at(size_type n) const;
+			reference			back()
+			{
+				return __Vec[__Size - 1];
+			};
+			const_reference		back() const
+			{
+				return __Vec[__Size - 1];
+			};
+			reference			front()
+			{
+				return __Vec[0];
+			};
+			const_reference		front() const
+			{
+				return __Vec[0];
+			};
+			reference			at(size_type n)
+			{
+				if (n < 0 || n >= __Size)
+					throw std::out_of_range("ft::vector");
+				return __Vec[n];
+			};
+			const_reference		at(size_type n) const
+			{
+				if (n < 0 || n >= __Size)
+					throw std::out_of_range("ft::vector");
+				return __Vec[n];
+			};
 			reference			operator[](size_type n)
 			{
 				return __Vec[n];
 			};
-		// 	const_reference		operator[](size_type n) const;
+			const_reference		operator[](size_type n) const
+			{
+				return __Vec[n];
+			};
 		//!=========================================
 
 		//! Modifiers member functions.
@@ -163,54 +244,79 @@ namespace ft{
 			//TODO: Decide whether I reallocate memory for the container or not. (IMO it's better to reallocate to not waste space)
 			//TODO: https://www.cplusplus.com/reference/vector/vector/assign/ "This causes an automatic reallocation of the allocated storage space if -and only if- the new vector size surpasses the current vector capacity."
 		};
-		// 	void			swap(Vector& x);
+			void			swap(vector& x)
+			{
+				vector tmp = *this;
+
+				*this = x;
+				x = tmp;
+			};
 		// 	iterator		erase(iterator position);
 		// 	iterator		erase(iterator first, iterator last);
 		// 	iterator		insert(iterator position, const value_type& val);
 		// 	void			insert(iterator position, size_type n, const value_type& val);
 		// 	template<class InputIterator>
 		// 	void			insert(iterator position, InputIterator first, InputIterator last);
-		// 	void			pop_back();
-		// 	void			push_back(const value_type& val);
-		template<class InputIterator>
-		void			assign(InputIterator first, InputIterator last)
-		{
-			std:ptrdiff_t distance = last - first;
-
-			this->clear();
-			LOG("==================>" << distance);
-			if (distance >= __Capacity)
+			void			pop_back()
 			{
-				__Alloc.deallocate(__Vec, __Capacity);
-				__Capacity *= 2;
-				__Vec = __Alloc.allocate(__Capacity);
-			}
-
-			for (int i = 0; i < distance; i++)
-				__Alloc.construct(__Vec + i, first + i);
-			__Size = distance;
-		};
-		
-		//* Assigns new contents to the vector, replacing its current contents, and modifying its size accordingly.
-		void			assign(size_type n, const value_type &val)
-		{
-			this->clear();
-			//* If there isn't enough storage allocated, reallocating enough space.
-			//? Is multiplying the already existing capacity by two a good idea?
-			if (n >= __Capacity)
+				__Alloc.destroy(__Vec + __Size);
+				if (__Size > 0)
+					__Size--;
+			};
+			void			push_back(const value_type& val)
 			{
-				__Alloc.deallocate(__Vec, __Capacity);
-				__Capacity *= 2;
-				__Vec = __Alloc.allocate(__Capacity);
-			}
+				if (__Size + 1 > __Capacity)
+				{
+					__Capacity *= 2;
+					this->reserve(__Capacity);
+				}
+				__Alloc.construct(__Vec + __Size, val);
+				__Size++;
+			};
 
-			//* Filling the vector with the new values.
-			for (int i = 0; i < n; i++)
+			template<class InputIterator>
+			void			assign(InputIterator first, InputIterator last)
 			{
-				__Alloc.construct(__Vec + i, val);
-			}
-			__Size = n;
-		};
+				std:ptrdiff_t distance = last - first;
+
+				// this->clear();
+				LOG("==================>" << distance);
+				if (distance > __Capacity)
+				{
+					__Capacity *= 2;
+					if (!__Capacity)
+						__Capacity = distance;
+					__Alloc.deallocate(__Vec, __Capacity);
+					__Vec = __Alloc.allocate(__Capacity);
+				}
+
+				for (int i = 0; i < distance; i++)
+					__Alloc.construct(__Vec + i, first + i);
+				__Size = distance;
+			};
+			
+			//* Assigns new contents to the vector, replacing its current contents, and modifying its size accordingly.
+			void			assign(size_type n, const value_type &val)
+			{
+				// this->clear();
+				//* If there isn't enough storage allocated, reallocating enough space.
+				//? Is multiplying the already existing capacity by two a good idea?
+				if (n > __Capacity)
+				{
+					__Capacity *= 2;
+					if (!__Capacity)
+						__Capacity = n;
+					__Alloc.deallocate(__Vec, __Capacity);
+					__Vec = __Alloc.allocate(__Capacity);
+				}
+
+				//* Filling the vector with the new values.
+				for (int i = 0; i < n; i++)
+				{
+					__Alloc.construct(__Vec + i, val);
+				}
+				__Size = n;
+			};
 		//!=========================================
 
 		//! Allocator member function
