@@ -256,15 +256,20 @@ namespace ft{
 				// __Alloc.destroy(__Vec + __Size +);
 				return (iterator(__Vec + distance));
 			};
-			// iterator		erase(iterator first, iterator last)
-			// {
-			// 	ptrdiff_t distance;
+			iterator		erase(iterator first, iterator last)
+			{
+				ptrdiff_t distance;
+				ptrdiff_t index;
 
-			// 	distance = last - first;
-			// 	if (__Size + distance > __Capacity)
-			// 		this->reserve(__Size + distance);
-			// 	for (int i )
-			// };
+				index = std::distance(begin(), first);
+				distance = std::distance(first, last);
+				__Size -= distance;
+				for (int i = index; i < distance; i++)
+					__Alloc.destroy(__Vec + i);
+				for (int i = index; i < __Size; i++)
+					__Alloc.construct(__Vec + i, __Vec[i + distance]);
+				return (iterator(__Vec + index));
+			};
 			iterator		insert(iterator position, const value_type& val)
 			{
 				ptrdiff_t	distance;
@@ -337,12 +342,13 @@ namespace ft{
 			{
 				if (__Size + 1 > __Capacity)
 				{
-					if (__Capacity == 0)
+					if (!__Capacity)
 						reserve(__Size + 1);
 					else
 						reserve(__Capacity * 2);
 				}
 				__Alloc.construct(__Vec + __Size, val);
+				__Size++;
 			};
 
 			template<class InputIterator>
@@ -350,9 +356,6 @@ namespace ft{
 							typename std::enable_if<!std::is_integral<InputIterator>::value, InputIterator>::type* = nullptr)
 			{
 				std::ptrdiff_t distance = last - first;
-
-				// this->clear();
-				LOG("==================>" << distance);
 				if (distance > __Capacity)
 				{
 					__Capacity *= 2;
