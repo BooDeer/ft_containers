@@ -91,15 +91,15 @@ class	random_access_iterator
 	//! The public operators.
 	public:
 		template <typename iter1, typename iter2>
-		friend bool	operator==(random_access_iterator<iter1>& lhs,random_access_iterator<iter2>& rhs)
+		friend bool	operator==(const iter1& lhs,const iter2& rhs)
 		{
-			return (*(lhs.base()) == *(rhs.base())) ? true : false;
+			return (lhs.__Ptr) == (rhs.__Ptr);
 		};
 
 		template <typename iter1, typename iter2>
-		friend bool	operator!=(random_access_iterator<iter1>& lhs, random_access_iterator<iter2>& rhs)
+		friend bool	operator!=(const iter1& lhs, const iter2& rhs)
 		{
-			return (*(lhs.base()) == *(rhs.base())) ? false : true;
+			return (lhs.__Ptr == rhs.__Ptr) ? false : true;
 		};
 		reference operator*() const
 		{
@@ -165,7 +165,8 @@ class	random_access_iterator
 		template <typename iter>
 		friend ptrdiff_t operator-(random_access_iterator<iter> __f, random_access_iterator<iter> __s)
 		{
-			return (__f - __s);
+
+			return (__f.base() - __s.base());
 		}
 
 		void	operator+=(const int& __n) { __Ptr = __Ptr + __n; }
@@ -174,27 +175,25 @@ class	random_access_iterator
 		//! ================================
 		
 		//! Comparison operators.
-		template <typename iter>		
-		friend bool	operator<(random_access_iterator<iter>& lhs, random_access_iterator<iter>& rhs)
+		template <class iter1, class iter2>		
+		friend bool	operator<(const iter1& lhs,const iter2& rhs)
 		{
-			return (*(lhs.base()) < *(rhs.base()) ? true : false);
+			return ((lhs.__Ptr < rhs.__Ptr));
 		};
-
-		template <typename iter>		
-		friend bool	operator<=(random_access_iterator<iter>& lhs, random_access_iterator<iter>& rhs)
+		template <class iter1, class iter2>		
+		friend bool	operator<=(const iter1& lhs,const iter2& rhs)
 		{
-			return (*(lhs.base()) <= *(rhs.base()) ? true : false);
+			return ((lhs.__Ptr <= rhs.__Ptr));
 		};
-		
-		template <typename iter>		
-		friend bool	operator>(random_access_iterator<iter>& lhs, random_access_iterator<iter>& rhs)
+		template <class iter1, class iter2>		
+		friend bool	operator>(const iter1& lhs,const iter2& rhs)
 		{
-			return (*(lhs.base()) > *(rhs.base()) ? true : false);
+			return ((lhs.__Ptr > rhs.__Ptr));
 		};
-		template <typename iter>		
-		friend bool	operator>=(random_access_iterator<iter>& lhs, random_access_iterator<iter>& rhs)
+		template <class iter1, class iter2>		
+		friend bool	operator>=(const iter1& lhs,const iter2& rhs)
 		{
-			return (*(lhs.base()) >= *(rhs.base()) ? true : false);
+			return ((lhs.__Ptr >= rhs.__Ptr));
 		};
 		//! ================================
 		reference	operator[](int i) const
