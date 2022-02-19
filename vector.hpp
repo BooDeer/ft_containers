@@ -36,7 +36,7 @@ namespace ft{
 			typedef random_access_iterator<const_value_type>							const_iterator;
 			typedef random_reverse_iterator<iterator>									reverse_iterator;
 			// typedef	xxx												const_reverse_iterator;
-			// typedef	xxx												difference_type;
+			typedef	std::ptrdiff_t														difference_type;
 			// //TODO <=======================================>
 			typedef	size_t											size_type;
 		// Public--<end>
@@ -185,7 +185,7 @@ namespace ft{
 		//!=========================================
 
 		//! Element access member functions.
-		// public:
+		public:
 			reference			back()
 			{
 				return __Vec[__Size - 1];
@@ -225,25 +225,37 @@ namespace ft{
 		//!=========================================
 
 		//! Modifiers member functions.
-		// public:
-		void			clear()
-		{
-			for (int i = 0; i < __Size; i++)
+		public:
+			void			clear()
 			{
-				__Alloc.destroy(__Vec + i);
-			}
-			__Size = 0;
-			//TODO: Decide whether I reallocate memory for the container or not. (IMO it's better to reallocate to not waste space)
-			//TODO: https://www.cplusplus.com/reference/vector/vector/assign/ "This causes an automatic reallocation of the allocated storage space if -and only if- the new vector size surpasses the current vector capacity."
-		};
-			void			swap(vector& x)
-			{
-				vector tmp = *this;
-
-				*this = x;
-				x = tmp;
+				for (int i = 0; i < __Size; i++)
+				{
+					__Alloc.destroy(__Vec + i);
+				}
+				__Size = 0;
+				//TODO: Decide whether I reallocate memory for the container or not. (IMO it's better to reallocate to not waste space)
+				//TODO: https://www.cplusplus.com/reference/vector/vector/assign/ "This causes an automatic reallocation of the allocated storage space if -and only if- the new vector size surpasses the current vector capacity."
 			};
-		// 	iterator		erase(iterator position);
+				void			swap(vector& x)
+				{
+					vector tmp = *this;
+
+					*this = x;
+					x = tmp;
+				};
+			iterator		erase(iterator position)
+			{
+				std::ptrdiff_t	distance;
+
+				distance = std::distance(this->begin(), position);
+
+				__Size--;
+				__Alloc.destroy(__Vec + distance);
+				for(int i = distance; i < __Size; i++)
+					__Alloc.construct(__Vec + i, __Vec[i + 1]); //?? __Vec[i] = __Vec[i + 1];
+				// __Alloc.destroy(__Vec + __Size +);
+				return (iterator(__Vec + distance));
+			};
 			// iterator		erase(iterator first, iterator last)
 			// {
 			// 	ptrdiff_t distance;
@@ -312,10 +324,7 @@ namespace ft{
 				}
 				// //* Inserting the element from n to n+distance
 				for(int i = n; i - n !=  distance; i++)
-				{
 					__Alloc.construct(__Vec + i, *(first + i - n));
-				}
-				// 	// __Alloc.construct(__Vec + i, first + i);
 				__Size += distance;
 			};
 			void			pop_back()
@@ -328,16 +337,12 @@ namespace ft{
 			{
 				if (__Size + 1 > __Capacity)
 				{
-					if (!__Capacity)
-						this->reserve(__Size + 1);
+					if (__Capacity == 0)
+						reserve(__Size + 1);
 					else
-					{
-						__Capacity *= 2;
-						this->reserve(__Capacity);
-					}
+						reserve(__Capacity * 2);
 				}
 				__Alloc.construct(__Vec + __Size, val);
-				__Size++;
 			};
 
 			template<class InputIterator>
