@@ -244,30 +244,80 @@ namespace ft{
 				x = tmp;
 			};
 		// 	iterator		erase(iterator position);
-			iterator		erase(iterator first, iterator last)
-			{
-				ptrdiff_t distance;
+			// iterator		erase(iterator first, iterator last)
+			// {
+			// 	ptrdiff_t distance;
 
-				distance = last - first;
-				if (__Size + distance > __Capacity)
-					this->reserve(__Size + distance);
-				for (int i)
-			};
+			// 	distance = last - first;
+			// 	if (__Size + distance > __Capacity)
+			// 		this->reserve(__Size + distance);
+			// 	for (int i )
+			// };
 			iterator		insert(iterator position, const value_type& val)
 			{
 				ptrdiff_t	distance;
 
-				distance = position - this->end();
+				distance = std::distance(this->begin(), position);
 				if (__Size + 1 > __Capacity)
 					this->reserve(__Capacity * 2);
 				for (int i = distance; i <= __Size; i++)
 					__Vec[i + 1] = __Vec[i];
-				__Vec[distance] = val;
+				//? Should I construct the inserted element or just copy it?
+				// __Vec[distance] = val;
+				__Alloc.construct(__Vec + distance, val);
 				__Size++;
+				return (this->begin());
 			};
-		// 	void			insert(iterator position, size_type n, const value_type& val);
-		// 	template<class InputIterator>
-		// 	void			insert(iterator position, InputIterator first, InputIterator last);
+			void			insert(iterator position, size_type n, const value_type& val)
+			{
+				std::ptrdiff_t	distance;
+				
+				distance = std::distance(this->begin(), position);
+				if (__Size + n > __Capacity)
+				{
+					if (__Size + n > __Capacity * 2)
+						this->reserve(__Size + n);
+					else
+						this->reserve(__Capacity * 2);
+				}
+				for (int i = distance + n; i < __Size + n; i++)
+					__Vec[i + 1] = __Vec[i];
+				for(int i = distance; i < distance + n; i++)
+				{
+					__Alloc.construct(__Vec + i, val);
+				}
+				__Size += n;
+			};
+			template<class InputIterator>
+			void			insert(iterator position, InputIterator first, InputIterator last,
+									typename std::enable_if<!std::is_integral<InputIterator>::value, InputIterator>::type* = nullptr)
+			{
+				std::ptrdiff_t distance, n;
+				distance = std::distance(first, last);		// correct
+				n = std::distance(this->begin(), position); // correct
+				if (__Size + distance > __Capacity)
+				{
+					if (__Size + distance > __Capacity * 2)
+						this->reserve(__Size + distance);
+					else
+						this->reserve(__Capacity * 2);
+				}
+				//* Moving the old element by <distance> to the right.
+				for (int i = __Size + distance - 1; i > n + distance; i--)
+				{
+					int	j = 1;
+					__Vec[i] = __Vec[__Size - j];
+					j++;
+					// LOG("Moving: " << __Vec[i] << "To: " << __Vec[i + distance]);
+				}
+				// //* Inserting the element from n to n+distance
+				for(int i = n; i - n !=  distance; i++)
+				{
+					__Alloc.construct(__Vec + i, *(first + i - n));
+				}
+				// 	// __Alloc.construct(__Vec + i, first + i);
+				__Size += distance;
+			};
 			void			pop_back()
 			{
 				__Alloc.destroy(__Vec + __Size);
@@ -291,9 +341,10 @@ namespace ft{
 			};
 
 			template<class InputIterator>
-			void			assign(InputIterator first, InputIterator last)
+			void			assign(InputIterator first, InputIterator last,
+							typename std::enable_if<!std::is_integral<InputIterator>::value, InputIterator>::type* = nullptr)
 			{
-				std:ptrdiff_t distance = last - first;
+				std::ptrdiff_t distance = last - first;
 
 				// this->clear();
 				LOG("==================>" << distance);
@@ -310,7 +361,7 @@ namespace ft{
 				{
 					if (i < __Size)
 						__Alloc.destroy(__Vec + i);
-					__Alloc.construct(__Vec + i, first + i);
+					__Alloc.construct(__Vec + i, first[i]);
 				}
 				__Size = distance;
 			};
