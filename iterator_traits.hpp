@@ -1,0 +1,97 @@
+#pragma once
+
+
+# include <iostream>
+
+
+
+
+namespace ft
+{
+
+
+	template <class _Tp>
+	struct is_integral: public std::false_type {};
+	template <>
+	struct is_integral<bool>: public std::true_type {};
+	template <>
+	struct is_integral<char>: public std::true_type {};
+	template <>
+	struct is_integral<signed char>: public std::true_type {};
+	template <>
+	struct is_integral<unsigned char>: public std::true_type {};
+	template <>
+	struct is_integral<wchar_t>: public std::true_type {};
+	template <>
+	struct is_integral<char16_t>: public std::true_type {};
+	template <>
+	struct is_integral<char32_t>: public std::true_type {};
+	template <>
+	struct is_integral<short>: public std::true_type {};
+	template <>
+	struct is_integral<unsigned short>: public std::true_type {};
+	template <>
+	struct is_integral<int>: public std::true_type {};
+	template <>
+	struct is_integral<unsigned int>: public std::true_type {};
+	template <>
+	struct is_integral<long>: public std::true_type {};
+	template <>
+	struct is_integral<unsigned long>: public std::true_type {};
+	template <>
+	struct is_integral<long long>: public std::true_type {};
+	template <>
+	struct is_integral<unsigned long long>: public std::true_type {};
+	template <>
+	struct is_integral<__int128_t>: public std::true_type {};
+	template <>
+	struct is_integral<__uint128_t>: public std::true_type {};
+	template <>
+	struct is_integral<float>: public std::true_type {};
+	template <>
+	struct is_integral<double>: public std::true_type {};
+	template <>
+	struct is_integral<long double>: public std::true_type {};
+
+	// //* The base class for all the iterators.
+	// template <class Category, class T, class Distance = ptrdiff_t,
+	//           class Pointer = T*, class Reference = T&>
+	//   struct iteratorBase {
+	//     typedef T         value_type;
+	//     typedef Distance  difference_type;
+	//     typedef Pointer   pointer;
+	//     typedef Reference reference;
+	//     typedef Category  iterator_category;
+	//   };
+
+
+	template<class T>
+	struct iterator_traits
+	{
+		typedef typename T::difference_type		difference_type;
+		typedef typename T::value_type			value_type;
+		typedef typename T::pointer				pointer;
+		typedef typename T::reference			reference;
+		typedef typename T::iterator_category	iterator_category;
+	};
+
+	template<class T>
+	struct iterator_traits<T *>
+	{
+		typedef std::ptrdiff_t							difference_type;
+		typedef T										value_type;
+		typedef T*										pointer;
+		typedef T&										reference;
+		typedef std::random_access_iterator_tag			iterator_category;
+	};
+
+	template<class T>
+	struct iterator_traits<const T *>
+	{
+		typedef std::ptrdiff_t							difference_type;
+		typedef T										value_type;
+		typedef const T*								pointer;
+		typedef const T&								reference;
+		typedef std::random_access_iterator_tag			iterator_category;
+	};
+}
