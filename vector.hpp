@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <memory>
+#include <math.h>
 #include "iterator.hpp"
 #include "reverse_iterator.hpp"
 
@@ -12,7 +13,7 @@ namespace ft{
 	struct	enable_if{};
 	
 	template<typename T>
-	struct	enable_if<true, T>
+	struct	enable_if<true, T> //* SFINAE
 	{
 		typedef T type;
 	};
@@ -32,17 +33,15 @@ namespace ft{
 			typedef	typename allocator_type::pointer				pointer;			//* Pointer to the allocated object. (Equal to T*)
 			typedef	typename allocator_type::const_pointer			const_pointer;		//* Const pointer to the allocated object. (Equal to const T*)
 			// //TODO: implement the iterators to be used.
-			typedef	random_access_iterator<value_type>									iterator;
-			typedef random_access_iterator<const_value_type>							const_iterator;
-			typedef random_reverse_iterator<iterator>									reverse_iterator;
-			// typedef	xxx												const_reverse_iterator;
-			typedef	std::ptrdiff_t														difference_type;
+			typedef	ft::random_access_iterator<value_type>									iterator;
+			typedef ft::random_access_iterator<const_value_type>							const_iterator;
+			typedef ft::reverse_iterator<iterator>											reverse_iterator;
+			typedef	ft::reverse_iterator<const_iterator>									const_reverse_iterator;
+			typedef	std::ptrdiff_t															difference_type;
 			// //TODO <=======================================>
-			typedef	size_t											size_type;
+			typedef	std::size_t																size_type;
 		// Public--<end>
 		//!=========================================
-
-
 
 		//! Orthodox canonical form (Member functions)
 
@@ -67,10 +66,19 @@ namespace ft{
 			template <class InputIterator>
         	vector (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type(),
 							typename std::enable_if<!std::is_integral<InputIterator>::value, InputIterator>::type* = nullptr)
-							: __Vec(nullptr), __Size(0), __Alloc(alloc)
+							: __Vec(nullptr), __Size(0), __Capacity(0), __Alloc(alloc)
 			{
-				__Capacity = std::distance(first, last);
-				this->assign(first, last);
+				__Capacity = last - first;
+				__Vec = __Alloc.allocate(__Capacity);
+				while (first != last)
+				{
+					this->push_back(*first);
+					++first;
+				}
+				// ptrdiff_t dist = std::distance(first, last);
+				// __Capacity = dist;
+				// __Vec = __Alloc.allocate(__Capacity);
+				// this->assign(first, last);
 			};
 
 			//* The copy constructor.
@@ -117,6 +125,10 @@ namespace ft{
 			{
 				return reverse_iterator(end());
 			}
+			const_reverse_iterator rbegin() const
+			{
+				return (const_reverse_iterator(end()));
+			}
 
 			iterator	end()
 			{
@@ -126,6 +138,10 @@ namespace ft{
 			reverse_iterator	rend()
 			{
 				return reverse_iterator(begin());
+			}
+			const_reverse_iterator rend() const
+			{
+				return (const_reverse_iterator(begin()));
 			}
 		//!=========================================
 
@@ -146,6 +162,7 @@ namespace ft{
 				{
 					for (int i = n; i < __Size; i++)
 						__Alloc.destroy(__Vec + i);
+					__Size = n;
 					return ;
 				}
 				else if (n > __Size)
@@ -153,6 +170,7 @@ namespace ft{
 					this->reserve(n);
 					for (int i = __Size; i < n; i++)
 						__Alloc.construct(__Vec + i, val);
+					__Size = n;
 				}
 			};
 
@@ -276,33 +294,36 @@ namespace ft{
 
 				distance = std::distance(this->begin(), position);
 				if (__Size + 1 > __Capacity)
-					this->reserve(__Capacity * 2);
-				for (int i = distance; i <= __Size; i++)
-					__Vec[i + 1] = __Vec[i];
-				//? Should I construct the inserted element or just copy it?
-				// __Vec[distance] = val;
+				{
+					if (__Capacity)
+						this->reserve(__Capacity * 2);
+					else
+						this->reserve(__Size + 1);
+				}
+				for (int i = __Size; i > distance; --i)
+					__Alloc.construct(__Vec + i, __Vec[i - 1]);
 				__Alloc.construct(__Vec + distance, val);
 				__Size++;
-				return (this->begin());
+				return (__Vec + distance);
 			};
 			void			insert(iterator position, size_type n, const value_type& val)
 			{
 				std::ptrdiff_t	distance;
 				
 				distance = std::distance(this->begin(), position);
-				if (__Size + n > __Capacity)
+				if (!__Size)
+					reserve(n);
+				else if (__Size + n > __Capacity)
 				{
-					if (__Size + n > __Capacity * 2)
-						this->reserve(__Size + n);
+					if (n > __Size)
+						reserve(__Size + n);
 					else
-						this->reserve(__Capacity * 2);
-				}
-				for (int i = distance + n; i < __Size + n; i++)
-					__Vec[i + 1] = __Vec[i];
-				for(int i = distance; i < distance + n; i++)
-				{
-					__Alloc.construct(__Vec + i, val);
-				}
+						reserve(__Capacity * 2);
+			}
+				for (int i = __Size - 1; i >= distance; --i)
+					__Alloc.construct(__Vec +(i + n), __Vec[i]);
+				for(int i = 0; i < n; ++i)
+					__Alloc.construct(__Vec + distance++, val);
 				__Size += n;
 			};
 			template<class InputIterator>
@@ -310,8 +331,8 @@ namespace ft{
 									typename std::enable_if<!std::is_integral<InputIterator>::value, InputIterator>::type* = nullptr)
 			{
 				std::ptrdiff_t distance, n;
-				distance = std::distance(first, last);		// correct
-				n = std::distance(this->begin(), position); // correct
+				n = std::distance(first, last);
+				distance = std::distance(this->begin(), position);
 				if (__Size + distance > __Capacity)
 				{
 					if (__Size + distance > __Capacity * 2)
@@ -320,17 +341,12 @@ namespace ft{
 						this->reserve(__Capacity * 2);
 				}
 				//* Moving the old element by <distance> to the right.
-				for (int i = __Size + distance - 1; i > n + distance; i--)
-				{
-					int	j = 1;
-					__Vec[i] = __Vec[__Size - j];
-					j++;
-					// LOG("Moving: " << __Vec[i] << "To: " << __Vec[i + distance]);
-				}
+				for (int i = __Size - 1; i >= distance; --i)
+					__Alloc.construct(__Vec + (i + n), __Vec[i]);
 				// //* Inserting the element from n to n+distance
-				for(int i = n; i - n !=  distance; i++)
-					__Alloc.construct(__Vec + i, *(first + i - n));
-				__Size += distance;
+				for(int i = 0; i < n; ++i)
+					__Alloc.construct(__Vec + distance++, *first++);
+				__Size += n;
 			};
 			void			pop_back()
 			{
@@ -355,7 +371,7 @@ namespace ft{
 			void			assign(InputIterator first, InputIterator last,
 							typename std::enable_if<!std::is_integral<InputIterator>::value, InputIterator>::type* = nullptr)
 			{
-				std::ptrdiff_t distance = last - first;
+				std::ptrdiff_t distance = std::distance(first, last);
 				if (distance > __Capacity)
 				{
 					__Capacity *= 2;
