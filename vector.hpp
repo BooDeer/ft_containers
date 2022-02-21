@@ -107,9 +107,12 @@ namespace ft{
 			~vector( void )
 			{
 				//TODO: implement the fucking destructor.
-				for (int i = 0; i < __Size; i++)
-					__Alloc.destroy(__Vec + i);
-				__Alloc.deallocate(__Vec, __Capacity);
+				if (__Vec != nullptr)
+				{
+					for (int i = 0; i < __Size; i++)
+						__Alloc.destroy(__Vec + i);
+					__Alloc.deallocate(__Vec, __Capacity);
+				}
 			};
 		//!=========================================
 
@@ -254,13 +257,24 @@ namespace ft{
 				//TODO: Decide whether I reallocate memory for the container or not. (IMO it's better to reallocate to not waste space)
 				//TODO: https://www.cplusplus.com/reference/vector/vector/assign/ "This causes an automatic reallocation of the allocated storage space if -and only if- the new vector size surpasses the current vector capacity."
 			};
-				void			swap(vector& x)
-				{
-					vector tmp = *this;
+			void			swap(vector& x)
+			{
+				pointer tmp;
+				tmp = this->__Vec;
+				size_t tmp__Size = this->__Size;
+				size_t tmp__Capacity = this->__Capacity;
+				// tmp.__Alloc = this->__Alloc;
 
-					*this = x;
-					x = tmp;
-				};
+				__Vec = x.__Vec;
+				__Size = x.__Size;
+				__Capacity = x.__Capacity;
+				// __Alloc = x.__Alloc;
+
+				x.__Vec = tmp;
+				x.__Size = tmp__Size;
+				x.__Capacity = tmp__Capacity;
+			};
+
 			iterator		erase(iterator position)
 			{
 				std::ptrdiff_t	distance;
@@ -330,23 +344,26 @@ namespace ft{
 			void			insert(iterator position, InputIterator first, InputIterator last,
 									typename std::enable_if<!std::is_integral<InputIterator>::value, InputIterator>::type* = nullptr)
 			{
-				std::ptrdiff_t distance, n;
-				n = std::distance(first, last);
-				distance = std::distance(this->begin(), position);
-				if (__Size + distance > __Capacity)
+				difference_type		n = std::distance(first, last);
+				difference_type		dist = std::distance(this->begin(), position);
+				
+				if (this->__Size == 0)
+					this->reserve(n);
+				else if ((size_type)(this->__Size + n) > this->__Capacity)
 				{
-					if (__Size + distance > __Capacity * 2)
-						this->reserve(__Size + distance);
+					if (this->__Capacity * 2 < this->__Size + n)
+						reserve(this->__Size + n);
 					else
-						this->reserve(__Capacity * 2);
+						reserve(this->__Capacity * 2);
 				}
-				//* Moving the old element by <distance> to the right.
-				for (int i = __Size - 1; i >= distance; --i)
-					__Alloc.construct(__Vec + (i + n), __Vec[i]);
-				// //* Inserting the element from n to n+distance
-				for(int i = 0; i < n; ++i)
-					__Alloc.construct(__Vec + distance++, *first++);
-				__Size += n;
+
+				for (difference_type i = this->__Size - 1;i >= dist;--i)
+					this->__Alloc.construct(this->__Vec + (i + n), this->__Vec[i]);
+
+				for (size_t i = 0; i < (size_t)n; ++i)
+					this->__Alloc.construct(this->__Vec + dist++, *first++);
+				
+				this->__Size += n;
 			};
 			void			pop_back()
 			{
@@ -424,11 +441,51 @@ namespace ft{
 				return allocator_type(__Alloc);
 			};
 
+		public:
 
+			
 		private:
 			pointer			__Vec;				//* The array of elements.
 			size_t			__Size;				//* The current size of the vector, meaning how many elements currently holding.
 			size_t			__Capacity;			//* The maximum size allocated for the vector.
 			allocator_type	__Alloc;			//* The allocator to be used
+	};
+	template<class _T, class _Alloc>
+	bool operator==(const vector<_T, _Alloc>& lhs, const vector<_T, _Alloc>& rhs)
+	{
+		if (lhs.size() == rhs.size())
+			return ft::equal(lhs.begin(), lhs.end(), rhs.begin());
+		else
+			return false;
+	};
+	template<class _T, class _Alloc>
+	bool operator!=(const vector<_T, _Alloc>& lhs, const vector<_T, _Alloc>& rhs)
+	{
+		return !(lhs == rhs);
+	};
+	template<class _T, class _Alloc>
+	bool operator<(const vector<_T, _Alloc>& lhs, const vector<_T, _Alloc>& rhs)
+	{
+		return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());  	
+	};
+	template<class _T, class _Alloc>
+	bool operator<=(const vector<_T, _Alloc>& lhs, const vector<_T, _Alloc>& rhs)
+	{
+		return !(rhs < lhs);
+	};
+	template<class _T, class _Alloc>
+	bool operator>(const vector<_T, _Alloc>& lhs, const vector<_T, _Alloc>& rhs)
+	{
+		return rhs < lhs;
+	};
+	template<class _T, class _Alloc>
+	bool operator>=(const vector<_T, _Alloc>& lhs, const vector<_T, _Alloc>& rhs)
+	{
+		return !(lhs < rhs);
+	};
+	template <class _T, class alloc>
+	void swap(vector<_T, alloc>&x, vector<_T, alloc>&y)
+	{
+		x.swap(y);
 	};
 }
