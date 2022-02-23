@@ -9,7 +9,6 @@ namespace ft
 	template <class __T1, class __T2>
 	struct pair
 	{
-		private:
 		typedef __T1 first_type;
 		typedef __T2 second_type;
 
