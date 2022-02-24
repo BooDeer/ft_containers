@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hboudhir <hboudhir@student.42.fr>          +#+  +:+       +#+        */
+/*   By: boodeer <boodeer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/08 14:54:59 by hboudhir          #+#    #+#             */
-/*   Updated: 2022/02/14 10:58:18 by hboudhir         ###   ########.fr       */
+/*   Updated: 2022/02/24 21:16:56 by boodeer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include <vector>
 // #include <map>
 #include "vector.hpp"
+#include "avlBST.hpp"
 
 /*
 	// template <class iter>
@@ -58,24 +59,37 @@ int main( void )
 {
 	
 	LOG("\n\n=============================== STD::MAP  ================================\n\n");
-	ft::vector<int>	test(5, 10);
-	
-	ft::vector<int>::iterator it;
+	{
+		// AvlBST<std::string>	test;
+		Node*	__root = NULL;
+		__root = insertNode(__root, 10);
+		__root = insertNode(__root, 13);
+		__root = insertNode(__root, 14);
+		__root = insertNode(__root, 9);
 
-	it = test.begin();
-	// std::cout << it << std::endl;
-	LOG(test.max_size());
+		LOG(findNode(__root, 8));
 
-	
+
+
+	}
 	LOG("============================== STD::VECTOR  ==============================\n\n");
-	std::vector<int>	testV(5,10);
-	std::vector<int>::iterator it1;
+	{
 
-	it1 = testV.begin();
 
-	LOG(*it1);
-	LOG(testV.max_size());
 
+
+
+
+
+
+
+
+
+
+
+
+
+	}
 
 
 
