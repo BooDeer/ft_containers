@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: boodeer <boodeer@student.42.fr>            +#+  +:+       +#+        */
+/*   By: hboudhir <hboudhir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/08 14:54:59 by hboudhir          #+#    #+#             */
-/*   Updated: 2022/02/24 21:16:56 by boodeer          ###   ########.fr       */
+/*   Updated: 2022/02/25 16:42:08 by hboudhir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,15 +62,12 @@ int main( void )
 	{
 		// AvlBST<std::string>	test;
 		Node*	__root = NULL;
-		__root = insertNode(__root, 10);
-		__root = insertNode(__root, 13);
-		__root = insertNode(__root, 14);
-		__root = insertNode(__root, 9);
-
-		LOG(findNode(__root, 8));
-
-
-
+		for(int i = 1; i < 10; i++)
+			__root = insertNode(__root, i * 10);
+		printBT(__root);
+		__root = deleteNode(__root, 60);
+		__root = deleteNode(__root, 70);
+		printBT(__root);
 	}
 	LOG("============================== STD::VECTOR  ==============================\n\n");
 	{
@@ -103,3 +100,16 @@ int main( void )
 
 	return (0);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
