@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hboudhir <hboudhir@student.42.fr>          +#+  +:+       +#+        */
+/*   By: boodeer <boodeer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/08 14:54:59 by hboudhir          #+#    #+#             */
-/*   Updated: 2022/02/25 16:42:08 by hboudhir         ###   ########.fr       */
+/*   Updated: 2022/02/25 20:54:12 by boodeer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 // #include <map>
 #include "vector.hpp"
 #include "avlBST.hpp"
+#include "utility.hpp"
 
 /*
 	// template <class iter>
@@ -60,14 +61,18 @@ int main( void )
 	
 	LOG("\n\n=============================== STD::MAP  ================================\n\n");
 	{
-		// AvlBST<std::string>	test;
-		Node*	__root = NULL;
-		for(int i = 1; i < 10; i++)
-			__root = insertNode(__root, i * 10);
-		printBT(__root);
-		__root = deleteNode(__root, 60);
-		__root = deleteNode(__root, 70);
-		printBT(__root);
+		
+		AvlBST<ft::pair<int, int> >	test;
+		
+		for(int i = 1; i <= 10; i++)
+			test.__root = test.insertNode(test.__root, ft::make_pair<int, int>(i * 10, i * 10));
+		test.printBT(test.__root);
+		// for(int i = 1; i < 10; i++)
+		// 	__root = insertNode(__root, i * 10);
+		// printBT(__root);
+		// __root = deleteNode(__root, 60);
+		// __root = deleteNode(__root, 70);
+		// printBT(__root);
 	}
 	LOG("============================== STD::VECTOR  ==============================\n\n");
 	{
