@@ -37,6 +37,12 @@ namespace ft
 
 
 
+		public:
+		//! The canonical form =====================================================================
+		explicit map (const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()): __Size(0), __Alloc(alloc), __cmp(comp) {};
+
+
+		//! The canonical form =====================================================================
 
 
 
@@ -63,12 +69,11 @@ namespace ft
 
 
 
-
-
-
-
-
-
+		private:
+			size_t			__Size;
+			// size_t			__Capacity; //<==== Not sure if there's a Capacity counter since it's a BST.
+			allocator_type	__Alloc;
+			key_compare		__cmp;
 
 	};
 };
