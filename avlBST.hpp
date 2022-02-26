@@ -2,73 +2,24 @@
 
 #include <iostream>
 
-
-// //! The node structer.
-
-
-
-
-// void	inorderTraversal(Node* root)
-// {
-// 	if (root != NULL)
-// 	{
-// 		inorderTraversal(root->left);
-// 		std::cout << root->key << " --> ";
-// 		inorderTraversal(root->right);
-// 	}
-// }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-template <class __T, class __Compare = std::less<__T>, class __Allocator = std::allocator<__T> >
+template <class __T, class __Compare = std::less<__T>, class Allocator = std::allocator<__T> >
 class AvlBST
 {
-	public:
+	private:
 		//* Types.
 		typedef __T									value_type;	
-
-	
+		typedef	Allocator							allocator_type;
+		typedef typename allocator_type::reference	reference;
+		typedef typename allocator_type::pointer	pointer;
+		// typedef 
 	struct Node
 	{
 		//? Is the parent node needed?
 		Node				*parent;			//* The parent node.
-		Node				*right;			//* The right child node.
-		Node				*left;			//* The left child node.
+		Node				*right;				//* The right child node.
+		Node				*left;				//* The left child node.
 		value_type			key;				//* The key hold by the node.
 		int					height;				//* The height of the node.
-		// Node (Node *__pr, Node *__rch, Node *__lch, int __data): parent(__pr), right(__rch), left(__lch), key(__data) {};
 	};
 
 	int height(Node *N)
@@ -185,7 +136,7 @@ class AvlBST
 
 	Node*	createNode(value_type key)
 	{
-		Node* newNode = new Node();
+		Node* newNode = new Node(); //TODO: change the "new" allocation with the allocator allocation.
 
 		//TODO: the key must be allocated and constructed as well
 		newNode->key = key;
@@ -201,7 +152,7 @@ class AvlBST
 		if (node == NULL)
 			return(createNode(key));
 
-		if (key.first <= node->key.first)
+		if (key.first < node->key.first)
 			node->left = insertNode(node->left, key);
 		else if (key.first > node->key.first)
 			node->right = insertNode(node->right, key);
@@ -256,12 +207,33 @@ class AvlBST
 		}
 	}
 
-	void printBT(const Node* node)
-	{
-		printBT("", node, false);    
-	}
 
 
+
+
+
+
+
+
+
+
+
+
+	public:
+		void printBT(const Node* node)
+		{
+			printBT("", node, false);    
+		}
+
+		void	insertNode(value_type key)
+		{
+			__root = insertNode(__root, key);
+		}
+
+		void	deleteNode(value_type key)
+		{
+			__root = deleteNode(__root, key);
+		}
 
 
 
@@ -305,6 +277,7 @@ class AvlBST
 		};
 	//! Insertion methods.
 	public:
+		//* Default constructor.
 		AvlBST( void ):__root(NULL) {
 			std::cout << "[AvlBST] Default constructor.\n";
 		};
@@ -328,11 +301,6 @@ class AvlBST
 	public:
 		//? Should I keep the default constructor private or not?
 		//* Private attributes.
-
-		// AvlBST*								__PAR;					//* The parent node.
-		// AvlBST*								__RC;					//* The right child node.
-		// AvlBST* 							__LC;					//* The left child node.
-		// __T									__Value;				//* The hold key.
 		Node								*__root;
 		__Compare							__cmp;
 };
