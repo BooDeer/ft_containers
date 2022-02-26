@@ -21,7 +21,9 @@ class	mapIterator
 	//! The canonical form.
 	public:
 		//* Default constructor.
-		mapIterator ( void ): __Tree(nullptr) {};
+		mapIterator ( void ) {
+			LOG("[mapIterator] Default constructor.");
+		};
 		// // Constructor with a parameter.
 		//* Copy constructor.
 		mapIterator(const mapIterator& src) {
@@ -39,12 +41,24 @@ class	mapIterator
 			//TODO: Implement the destructor.
 			
 		}
-		
 
+	//TODO: Insert, delete and other member functions related to the tree shall be converted to private member functions later.
+	//TODO: (currently public just for the sake of testing)
+	public:
+		void	insert(const value_type& node)
+		{
+			this->__Tree.insertNode(node);
+		}
 
-
-
-
+		void	deleteNode(const value_type& node)
+		{
+			__Tree.deleteNode(node);
+		}
+	//! Debug functions.
+		void	debug( void )
+		{
+			this->__Tree.printBT(__Tree.__root);
+		}
 
 
 
