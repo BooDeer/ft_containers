@@ -207,6 +207,23 @@ Node* minValue(Node* node)
     return current;
 }
 
+Node* searchNode(Node* n, value_type key)
+{
+	Node* current = n;
+
+	while (current != NULL)
+	{
+		if (key.first == current->key.first)
+			return current;
+		else if (key.first < current->key.first)
+			current = current->left;
+		else if (key.first > current->key.first)
+			current = current->right;
+	}
+
+	return NULL;
+}
+
 Node* inOrderSuccessor(
     Node* root,
     Node* n)
