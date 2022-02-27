@@ -224,6 +224,27 @@ Node* inOrderSuccessor(
     return p;
 }
 
+Node*	inOrderPredecessor(Node* node) {
+
+	if (node == NULL)
+		return NULL;
+	
+	if (node->left != NULL)
+	{
+		node = node->left;
+		while (node->right != NULL)
+			node = node->right;
+		return node;
+	}
+	Node* par = node->par;
+	while (par != NULL && par->left == node)
+	{
+		node = par;
+		par = par->par;
+	}
+	return par;
+}
+
 void Updateheight(
     struct Node* root)
 {
