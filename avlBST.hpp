@@ -196,6 +196,17 @@ class AvlBST
 
 
 
+Node* minValue( void )
+{
+    Node* current = __root;
+ 
+    /* loop down to find the leftmost leaf */
+    while (current->left != NULL) {
+        current = current->left;
+    }
+    return current;
+}
+
 Node* minValue(Node* node)
 {
     Node* current = node;
@@ -753,19 +764,19 @@ struct Node*	eraseNode(Node* root, value_type key)
 
 
 	public:
-		void printBT(const Node* node)
+		void printBT( void )
 		{
-			printBT("", node, false);    
+			printBT("", __root, false);    
 		}
 
-		Node*	insertNode(const Node* __root, value_type key)
+		void insertNode(value_type key)
 		{
-			return insertNode(__root, key);
+			__root = insertNode(__root, NULL, key);
 		}
 
-		Node*	deleteNode(Node* __root, value_type key)
+		void deleteNode(value_type key)
 		{
-			return eraseNode(__root, key);
+			__root = eraseNode(__root, key);
 		}
 
 
@@ -800,6 +811,9 @@ struct Node*	eraseNode(Node* root, value_type key)
 		//* Assignement operator.
 		AvlBST& operator=( const AvlBST& rhs)
 		{
+			__root	= rhs.__root;
+			__alloc	= rhs.__alloc;
+			__cmp	= rhs.__cmp;
 			return *this;
 		};
 		//* Destructor
@@ -811,7 +825,7 @@ struct Node*	eraseNode(Node* root, value_type key)
 	//! Insertion methods.
 	public:
 		//* Default constructor.
-		AvlBST( void ){
+		AvlBST( const allocator_type& alloc = allocator_type() ): __root(NULL), __alloc(alloc) {
 			std::cout << "[AvlBST] Default constructor.\n";
 		};
 		// struct Node<value_type>*	insertNode(struct Node<value_type>* node, value_type key)
@@ -834,8 +848,9 @@ struct Node*	eraseNode(Node* root, value_type key)
 	public:
 		//? Should I keep the default constructor private or not?
 		//* Private attributes.
-		// Node								*__root;
+		Node								*__root;
 		__Compare							__cmp;
+		Allocator							__alloc;
 };
 
 
