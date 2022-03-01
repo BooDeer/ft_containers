@@ -26,7 +26,7 @@ namespace ft
 			typedef typename allocator_type::const_pointer			const_pointer;
 			
 			//* Iterators.
-			// typedef	mapIterator<AvlBST<value_type, key_compare> >							iterator;
+			typedef	mapIterator<AvlBST<value_type, key_compare> >							iterator;
 			// typedef mapIterator<const AvlBST<value_type, key_compare> >						const_iterator;
 			// typedef reverseMapIterator<iterator>									reverse_iterator;
 			// typedef reverseMapIterator<const_iterator>							const_reverse_iterator;
@@ -42,7 +42,7 @@ namespace ft
 		//! The canonical form =====================================================================
 		//* Default constructor.
 		explicit map (const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()): __Size(0), __Alloc(alloc), __cmp(comp) {
-			LOG("[map] Default constructor.");
+			// LOG("[map] Default constructor.");
 		};
 		//* Copy constructor.
 		map (const map& src): __Size(src.__Size), __cmp(src.__cmp)
@@ -71,17 +71,25 @@ namespace ft
 			{
 				return __Alloc.max_size();
 			}
+			iterator	insert(const value_type& val)
+			{
+				return __TreeRoot.insertNode(val);
+			};
+		
+
+		//! Iterator member functions.
+		public:
+			// iterator	begin()
+			// {
+			// 	return iterator(__TreeRoot.begin());
+			// }
 
 
-
-
-
-
-
-
-		private:
+		//! Currently they're public for testing only.
+		//TODO: return it private after finishing tests.
+		public:
 			size_t											__Size;
-			AvlBST<value_type, key_compare>					__TreeRoot;
+			AvlBST<value_type, key_compare, Alloc>					__TreeRoot;
 			// size_t			__Capacity; //<==== Not sure if there's a Capacity counter since it's a BST.
 			allocator_type									__Alloc;
 			key_compare										__cmp;
