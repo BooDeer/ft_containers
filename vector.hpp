@@ -68,7 +68,14 @@ namespace ft{
 							typename std::enable_if<!std::is_integral<InputIterator>::value, InputIterator>::type* = nullptr)
 							: __Vec(nullptr), __Size(0), __Capacity(0), __Alloc(alloc)
 			{
-				__Capacity = last - first;
+				//? Which one should I use (without std::distance it fail in the case of set operator)
+				// __Capacity = std::distance(first, last);
+				size_type j = 0;
+				InputIterator firs1 = first;
+				InputIterator last1 = last;
+				for(; firs1 != last1; firs1++)
+					j++;
+				__Capacity = j;
 				__Vec = __Alloc.allocate(__Capacity);
 				while (first != last)
 				{
