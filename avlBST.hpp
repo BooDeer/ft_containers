@@ -526,9 +526,18 @@ class AvlBST
 		{
 			return mv_ch->key;
 		}
-		value_type	operator->() const
+		value_type*	operator->() const
 		{
-			return mv_ch->key;
+			return &(mv_ch->key);
+		}
+
+		friend	bool	operator==(const AvlBST&lhs, const AvlBST& rhs)
+		{
+			return lhs.mv_ch->key == rhs.mv_ch->key;
+		}
+		friend	bool	operator!=(const AvlBST&lhs, const AvlBST& rhs)
+		{
+			return lhs.mv_ch->key != rhs.mv_ch->key;
 		}
 	//! ======================================================================================
 	public:
