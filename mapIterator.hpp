@@ -73,17 +73,17 @@ class	mapIterator
 			--(*this);
 			return temp;
 		}
-		// friend bool operator==(const mapIterator& __x, const mapIterator& __y)
-		// { return __x.__Tree == __y.__Tree; }
-		// friend bool operator!=	(const mapIterator& __x, const mapIterator& __y)
-		// { return __x.__Tree != __y.__Tree; }
+		friend bool operator==(const mapIterator& __x, const mapIterator& __y)
+		{ return __x.__Tree == __y.__Tree; }
+		friend bool operator!=	(const mapIterator& __x, const mapIterator& __y)
+		{ return __x.__Tree != __y.__Tree; }
 
 		reference	operator*() const	//! Why does the map iterator return a pointer to the pair.
 		{
 			return __Tree.operator*();
 		}
 
-		value_type		operator->() const
+		value_type*		operator->() const
 		{
 			return __Tree.operator->();
 		}
