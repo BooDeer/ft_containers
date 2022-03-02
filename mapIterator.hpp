@@ -4,37 +4,39 @@
 #include "avlBST.hpp"
 
 
-template <class __Iter, class Compare = std::less<__Iter> >
+template <class Avltree>
 class	mapIterator
 {
 	public:
 		//* Types.
-		typedef __Iter													iterator_type;
+		typedef Avltree													iterator_type;
 		typedef std::bidirectional_iterator_tag							iterator_category;
-		typedef	iterator_type											value_type;
+		typedef	typename iterator_type::value_type						value_type;
+		typedef typename iterator_type::Node*							node_pointer;
 		typedef	std::ptrdiff_t											difference_type;
-		typedef	iterator_type*											pointer;
-		typedef	iterator_type&											reference;
+		// typedef	iterator_type*											pointer;	//! Check the typedef related to the pointer.
+		typedef	value_type&												reference;
+		typedef	value_type*												pointer;
 
 
 
 	//! The canonical form.
 	public:
 		//* Default constructor.
-		mapIterator ( void ) { LOG("[mapIterator] Default constructor."); };
+		mapIterator ( void ) { LOG("[mapIterator] Default constructor."); 
+			};
 		//* Copy constructor.
 		mapIterator(const mapIterator& src) {
 			*this = src;
 		}
 		//* Initialization constructor.
-		mapIterator(iterator_type& src)
-		{
+		mapIterator(const iterator_type& src){
+		
 			__Tree = src;
 		}
 
-		mapIterator& operator=( const mapIterator& rhs )
+		mapIterator& operator=(const mapIterator& rhs )
 		{
-			LOG("assignement");
 			this->__Tree = rhs.__Tree;
 			return *this;
 		}
@@ -71,17 +73,17 @@ class	mapIterator
 			--(*this);
 			return temp;
 		}
-		friend bool operator==(const mapIterator& __x, const mapIterator& __y)
-		{ return __x.__Tree == __y.__Tree; }
-		friend bool operator!=	(const mapIterator& __x, const mapIterator& __y)
-		{ return __x.__Tree != __y.__Tree; }
+		// friend bool operator==(const mapIterator& __x, const mapIterator& __y)
+		// { return __x.__Tree == __y.__Tree; }
+		// friend bool operator!=	(const mapIterator& __x, const mapIterator& __y)
+		// { return __x.__Tree != __y.__Tree; }
 
-		reference	operator*() const
+		reference	operator*() const	//! Why does the map iterator return a pointer to the pair.
 		{
-			return *__Tree;
+			return __Tree.operator*();
 		}
 
-		pointer		operator->() const
+		value_type		operator->() const
 		{
 			return __Tree.operator->();
 		}
