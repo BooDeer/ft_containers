@@ -20,7 +20,7 @@ class AvlBST
 		Node(__T val): key(val) {};
 		Node(Node *p, Node *r, Node *l, first_type k1,second_type k2, int h): par(p), right(r), left(l), key(k1, k2), height(h) {};
 	};
-	private:
+	public:
 		//* Types.
 		typedef __T															value_type;	
 		typedef	Allocator													allocator_type;
@@ -33,7 +33,8 @@ class AvlBST
 	//* Get the node with the smallest value.
 	Node* minValue( void ) {
 		Node* current = __root;
-
+		if (__root == NULL)
+			return __root;
 		while (current->left != NULL) {
 			current = current->left;
 		}
@@ -123,6 +124,7 @@ class AvlBST
 	// Function to handle Left Left Case
 	struct Node* LLR(struct Node* root)
 	{
+		// LOG("LLR");
 		struct Node* tmpnode = root->left;
 
 		root->left = tmpnode->right;
@@ -154,6 +156,7 @@ class AvlBST
 	// Function to handle Right Right Case
 	struct Node* RRR(struct Node* root)
 	{
+		// LOG("RRR");
 		struct Node* tmpnode = root->right;
 
 		root->right = tmpnode->left;
@@ -183,6 +186,7 @@ class AvlBST
 	// Function to handle Left Right Case
 	struct Node* LRR(struct Node* root)
 	{
+		// LOG("LRR");
 		root->left = RRR(root->left);
 		return LLR(root);
 	}
@@ -190,6 +194,7 @@ class AvlBST
 	// Function to handle right left case
 	struct Node* RLR(struct Node* root)
 	{
+		// LOG("RLR");
 		root->right = LLR(root->right);
 		return RRR(root);
 	}
@@ -248,7 +253,7 @@ class AvlBST
 		if (root == NULL) {
 			root = __alloc.allocate(1);
 			__alloc.construct(root, Node(NULL, NULL, NULL, key.first, key.second, 0));
-			// LOG("Memory allocated for the value: " << key.first << " is " << root);
+			LOG("Memory allocated for the value: " << key.first << " is " << root);
 			root->height = 1;
 			root->left = NULL;
 			root->right = NULL;
@@ -267,8 +272,7 @@ class AvlBST
 				secondheight = root->right->height;
 			if (abs(firstheight- secondheight)== 2) {
 	
-				if (root->left != NULL
-					&& key.first < root->left->key.first) {
+				if (root->left != NULL && key.first < root->left->key.first) {
 					root = LLR(root);
 				}
 				else {
@@ -289,8 +293,7 @@ class AvlBST
 			if (root->right != NULL)
 				secondheight = root->right->height;
 			if (abs(firstheight - secondheight) == 2) {
-				if (root->right != NULL
-					&& key.first < root->right->key.first) {
+				if (root->right != NULL	&& key.first < root->right->key.first) {
 					root = RLR(root);
 				}
 				else {
@@ -314,8 +317,8 @@ class AvlBST
 			std::cout << (isLeft ? "├──" : "└──" );
 
 			// print the value of the node
-			// std::cout << node->key.second << "address: " << node;
-			std::cout << node->key.second;
+			std::cout << node->key.second << "address: " << node;
+			// std::cout << node->key.second;
 			if (node->par)
 				std::cout << "p:" << node->par->key.second;
 			std::cout << std::endl;
@@ -328,29 +331,25 @@ class AvlBST
 
 	struct Node*	eraseNode(Node* root, value_type key)
 	{
+		LOG("Erase Node");
 		if (root != NULL) {
 			// If the node is found
 			if (root->key.first == key.first) {
-				if (root->right == NULL
-					&& root->left != NULL) {
+				if (root->right == NULL && root->left != NULL) {
 					if (root->par != NULL) {
-						if (root->par->key.first
-							< root->key.first)
+						if (root->par->key.first < root->key.first)
 							root->par->right = root->left;
 						else
 							root->par->left = root->left;
 						Updateheight(root->par);
 					}
 					root->left->par = root->par;
-					root->left = Balance(
-						root->left);
+					root->left = Balance(root->left);
 					return root->left;
 				}
-				else if (root->left == NULL
-						&& root->right != NULL) {
+				else if (root->left == NULL	&& root->right != NULL) {
 					if (root->par != NULL) {
-						if (root->par->key.first
-							< root->key.first)
+						if (root->par->key.first < root->key.first)
 							root->par->right = root->right;
 						else
 							root->par->left = root->right;
@@ -446,12 +445,19 @@ class AvlBST
 				return;
 			
 			// LOG(noodle->key.first);
+			LOG("Parent of value: " << noodle->key.first);
 			__alloc.destroy(noodle);
 			__alloc.deallocate(noodle, 1);
 			if (noodle->left)
+			{
+				LOG("Left child.");
 				noodles_destroyer(noodle->left);
+			}
 			if (noodle->right)
+			{
+				LOG("Right child.");
 				noodles_destroyer(noodle->right);
+			}
 		}
 
 		void	destroy_noodles( void )
@@ -465,6 +471,12 @@ class AvlBST
 		AvlBST( const AvlBST& src )
 		{
 			*this = src;
+		};
+
+		AvlBST(Node *root, Node* copy)
+		{
+			this->__root	= copy_helper(root);
+			this->mv_ch		= copy_helper(copy);
 		};
 		//* Assignement operator. Should be a deep copy not shallow.
 		AvlBST& operator=( const AvlBST& rhs)
@@ -482,15 +494,13 @@ class AvlBST
 		//* Destructor
 		~AvlBST( void )
 		{
-			LOG("Reached here");
+			// LOG("Reached here");
 			//TODO: to be implemented.
-			destroy_noodles();
+			// destroy_noodles();
 		};
 		AvlBST	begin()
 		{
-			// value_type	*temp;
-			// temp	=	this->minValue();
-			AvlBST(__root, minValue());
+			return AvlBST(__root, minValue());
 		}
 	//! Insertion methods.
 	public:
@@ -503,8 +513,22 @@ class AvlBST
 		AvlBST& operator++()
 		{
 			mv_ch = inOrderSuccessor(mv_ch);
-			LOG(mv_ch->key.second);
+			// LOG(mv_ch->key.second);
 			return *this;
+		}
+		AvlBST& operator--()
+		{
+			mv_ch = inOrderPredecessor(mv_ch);
+			return *this;
+		}
+
+		value_type&	operator*() const
+		{
+			return mv_ch->key;
+		}
+		value_type	operator->() const
+		{
+			return mv_ch->key;
 		}
 	//! ======================================================================================
 	public:
