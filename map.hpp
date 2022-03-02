@@ -71,7 +71,7 @@ namespace ft
 			{
 				return __Alloc.max_size();
 			}
-			iterator	insert(const value_type& val)
+			void	insert(const value_type& val)
 			{
 				return __TreeRoot.insertNode(val);
 			};
@@ -79,10 +79,10 @@ namespace ft
 
 		//! Iterator member functions.
 		public:
-			// iterator	begin()
-			// {
-			// 	return iterator(__TreeRoot.begin());
-			// }
+			iterator	begin()
+			{
+				return iterator(__TreeRoot.begin());
+			}
 
 
 		//! Currently they're public for testing only.
