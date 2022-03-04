@@ -27,7 +27,8 @@ class AvlBST
 		typedef typename Allocator::template rebind<Node>::other			__allocTy;
 		typedef typename allocator_type::reference							reference;
 		typedef typename allocator_type::pointer							pointer;
-		// typedef 
+		typedef typename __T::first_type									first_type;
+		typedef typename __T::second_type									second_type;
 	public:
 
 	//* Get the node with the smallest value.
@@ -48,6 +49,15 @@ class AvlBST
 	
 		while (current->left != NULL) {
 			current = current->left;
+		}
+		return current;
+	}
+	Node* maxValue(Node* node)
+	{
+		Node* current = node;
+	
+		while (current->right != NULL) {
+			current = current->right;
 		}
 		return current;
 	}
@@ -253,7 +263,7 @@ class AvlBST
 		if (root == NULL) {
 			root = __alloc.allocate(1);
 			__alloc.construct(root, Node(NULL, NULL, NULL, key.first, key.second, 0));
-			LOG("Memory allocated for the value: " << key.first << " is " << root);
+			// LOG("Memory allocated for the value: " << key.first << " is " << root);
 			root->height = 1;
 			root->left = NULL;
 			root->right = NULL;
@@ -317,10 +327,10 @@ class AvlBST
 			std::cout << (isLeft ? "├──" : "└──" );
 
 			// print the value of the node
-			std::cout << node->key.second << "address: " << node;
-			// std::cout << node->key.second;
-			if (node->par)
-				std::cout << "p:" << node->par->key.second;
+			// std::cout << node->key.second << "address:" << node;
+			std::cout << node->key.first;
+			// if (node->par)
+				// std::cout << "p:" << node->par->key.second;
 			std::cout << std::endl;
 
 			// enter the next tree level - left and right branch
@@ -331,12 +341,67 @@ class AvlBST
 
 	struct Node*	eraseNode(Node* root, value_type key)
 	{
+		// if ((root->left == NULL && root->right == NULL))
+		// {
+		// 	if (key.first == root->key.first)
+		// 	{
+		// 		//delete it here
+		// 		__alloc.destroy(root);
+		// 		__alloc.deallocate(root, 1);
+		// 	}
+		// 	return NULL;
+		// }
+
+		// Node *tmp;
+		// if (key.first < root->key.first)
+		// 	root->left = eraseNode(root->left, key);
+		// else if (key.first > root->key.first)
+		// 	root->right = eraseNode(root->right, key);
+		// else
+		// {
+		// 	if (root->left != NULL)
+		// 	{
+		// 		tmp = maxValue(root->left);
+		// 		Node * tmp_r = root->right;
+		// 		Node * tmp_l = root->left;
+		// 		Node * tmp_p = root->par;
+		// 		int		tmp_h = root->height;
+		// 		// root = __alloc.allocate(1);
+		// 		__alloc.construct(root, Node(tmp_r, tmp_r, tmp_l, tmp.first, tmp.second, tmp_h));
+		// 		root->left = deleteNode(root->left, tmp->par->key.first);
+		// 	}
+		// 	else if (root->right != NULL)
+		// 	{
+		// 		tmp = minValue(root->left);
+		// 		Node * tmp_r = root->right;
+		// 		Node * tmp_l = root->left;
+		// 		Node * tmp_p = root->par;
+		// 		int		tmp_h = root->height;
+		// 		// root = __alloc.allocate(1);
+		// 		__alloc.construct(root, Node(tmp_r, tmp_r, tmp_l, tmp.first, tmp.second, tmp_h));
+		// 		root->right = deleteNode(root->right, tmp->par->key.first);				
+		// 	}
+		// }
+
+
+
+
+
+
+
+
+
+
+
 		LOG("Erase Node");
 		if (root != NULL) {
 			// If the node is found
-			if (root->key.first == key.first) {
-				if (root->right == NULL && root->left != NULL) {
-					if (root->par != NULL) {
+			if (root->key.first == key.first)
+			{
+				if (root->right == NULL && root->left != NULL)
+				{
+					if (root->par != NULL)
+					{
 						if (root->par->key.first < root->key.first)
 							root->par->right = root->left;
 						else
@@ -347,8 +412,10 @@ class AvlBST
 					root->left = Balance(root->left);
 					return root->left;
 				}
-				else if (root->left == NULL	&& root->right != NULL) {
-					if (root->par != NULL) {
+				else if (root->left == NULL	&& root->right != NULL)
+			{
+					if (root->par != NULL)
+					{
 						if (root->par->key.first < root->key.first)
 							root->par->right = root->right;
 						else
@@ -359,25 +426,31 @@ class AvlBST
 					root->right = Balance(root->right);
 					return root->right;
 				}
-				else if (root->left == NULL
-						&& root->right == NULL) {
-					if (root->par->key.first < root->key.first) {
+				else if (root->left == NULL && root->right == NULL)
+				{
+					if (root-> par == NULL)
+						root = NULL;
+					else if (root->par->key.first < root->key.first)
+					{
 						root->par->right = NULL;
 					}
-					else {
+					else
+					{
 						root->par->left = NULL;
 					}
 	
-					if (root->par != NULL)
+					if (root && root->par != NULL)
 						Updateheight(root->par);
 	
 					root = NULL;
 					return NULL;
 				}
-				else {
+				else
+				{
 					struct Node* tmpnode = root;
 					tmpnode = tmpnode->right;
-					while (tmpnode->left != NULL) {
+					while (tmpnode->left != NULL)
+					{
 						tmpnode = tmpnode->left;
 					}
 	
@@ -386,23 +459,35 @@ class AvlBST
 					root->right
 						= eraseNode(root->right, tmpnode->key);
 	
-					root->key = val;
+					// root->key = val;
+					tmpnode->par = root->par;
+					tmpnode->right = root->right;
+					tmpnode->left = root->left;
+					tmpnode->height = root->height;
+					__alloc.destroy(root);
+					__alloc.deallocate(root, 1);
+					root = __alloc.allocate(1);
+					__alloc.construct(root,Node(tmpnode->par, tmpnode->right, tmpnode->left, tmpnode->key.first, tmpnode->key.second, tmpnode->height));
+					// Node(root->par, root->right, root->left, tmpnode->key.first, tmpnode->key.second, root->height);
 					root = Balance(root);
 				}
 			}
-			else if (root->key.first < key.first) {
+			else if (root->key.first < key.first)
+			{
 				root->right = eraseNode(root->right, key);
 	
 				root = Balance(root);
 			}
-			else if (root->key.first > key.first) {
+			else if (root->key.first > key.first)
+			{
 				root->left = eraseNode(root->left, key);
 	
 				root = Balance(root);
 			}
-			if (root != NULL) {
-				Updateheight(root);
-			}
+		if (root != NULL)
+		{
+			Updateheight(root);
+		}
 		}
 		return root;
 	}
@@ -413,14 +498,21 @@ class AvlBST
 			printBT("", __root, false);    
 		}
 
-		void insertNode(value_type key)
+		bool insertNode(value_type key)
 		{
+			if (this->searchNode(__root, key))
+				return false;
 			__root = insertNode(__root, NULL, key);
+			return true;
 		}
 
 		void deleteNode(value_type key)
 		{
 			__root = eraseNode(__root, key);
+		}
+		void deleteNode(first_type key)
+		{
+			deleteNode(ft::make_pair<first_type, second_type>(key, second_type()));
 		}
 
 		Node*	copy_helper(Node* root)
@@ -445,7 +537,7 @@ class AvlBST
 				return;
 			
 			// LOG(noodle->key.first);
-			LOG("Parent of value: " << noodle->key.first);
+			// LOG("Parent of value: " << noodle->key.first);
 			__alloc.destroy(noodle);
 			__alloc.deallocate(noodle, 1);
 			if (noodle->left)
