@@ -18,12 +18,13 @@ class	mapIterator
 		typedef	value_type&												reference;
 		typedef	value_type*												pointer;
 
-
+	private:
+		typedef mapIterator< const Avltree>								const_iterator;
 
 	//! The canonical form.
 	public:
 		//* Default constructor.
-		mapIterator ( void ) { LOG("[mapIterator] Default constructor."); 
+		mapIterator ( void ) {  
 			};
 		//* Copy constructor.
 		mapIterator(const mapIterator& src) {
@@ -45,7 +46,9 @@ class	mapIterator
 			//TODO: Implement the destructor.
 			
 		}
-
+		operator const_iterator(){
+			return const_iterator(this->__Tree);
+		}
 
 	//! Arithmetic operations.
 	public:
