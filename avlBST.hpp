@@ -79,6 +79,22 @@ class AvlBST
 
 		return NULL;
 	}
+	Node* searchNode(Node* n, first_type key)
+	{
+		Node* current = n;
+
+		while (current != NULL)
+		{
+			if (key == current->key.first)
+				return current;
+			else if (key < current->key.first)
+				current = current->left;
+			else if (key > current->key.first)
+				current = current->right;
+		}
+
+		return NULL;
+	}
 
 	//* Find the next node from the current node.
 	Node* inOrderSuccessor(Node* n)
@@ -393,7 +409,6 @@ class AvlBST
 
 
 
-		LOG("Erase Node");
 		if (root != NULL) {
 			// If the node is found
 			if (root->key.first == key.first)
@@ -429,7 +444,11 @@ class AvlBST
 				else if (root->left == NULL && root->right == NULL)
 				{
 					if (root-> par == NULL)
+					{
+						__alloc.destroy(root);
+						__alloc.deallocate(root, 1);
 						root = NULL;
+					}
 					else if (root->par->key.first < root->key.first)
 					{
 						root->par->right = NULL;
@@ -605,13 +624,24 @@ class AvlBST
 		AvlBST& operator++()
 		{
 			mv_ch = inOrderSuccessor(mv_ch);
-			// LOG(mv_ch->key.second);
 			return *this;
+		}
+		AvlBST& operator++(int)
+		{
+			AvlBST	tmp(*this);
+			++(*this);
+			return tmp;
 		}
 		AvlBST& operator--()
 		{
 			mv_ch = inOrderPredecessor(mv_ch);
 			return *this;
+		}
+		AvlBST& operator--(int)
+		{
+			AvlBST tmp(*this);
+			--(*this);
+			return tmp;
 		}
 
 		value_type&	operator*() const
