@@ -27,7 +27,7 @@ namespace ft
 			
 			//* Iterators.
 			typedef	mapIterator<AvlBST<value_type, key_compare> >							iterator;
-			typedef mapIterator<const AvlBST<value_type, key_compare> >						const_iterator;
+			typedef mapIterator<AvlBST<value_type, key_compare> >						const_iterator;
 			typedef ft::reverse_iterator<iterator>									reverse_iterator;
 			typedef ft::reverse_iterator<const_iterator>							const_reverse_iterator;
 			typedef std::ptrdiff_t									difference_type;
