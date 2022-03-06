@@ -6,7 +6,7 @@
 /*   By: hboudhir <hboudhir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/08 14:54:59 by hboudhir          #+#    #+#             */
-/*   Updated: 2022/02/27 16:53:13 by hboudhir         ###   ########.fr       */
+/*   Updated: 2022/03/06 16:22:07 by hboudhir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,29 +64,26 @@ int main( void )
 	LOG("\n\n=============================== STD::MAP  ================================\n\n");
 	{
 		// mapIterator<ft::pair<int, int> >	test;
-		AvlBST<ft::pair<int, std::string> >::Node *__root = NULL;
-		AvlBST<ft::pair<int, std::string> > root;
+		ft::map<int, int>		mapT;
 
-		for(int i = 1; i <= 100; i++)
-			__root = root.insertNode(__root, NULL, ft::pair<int, std::string>(i * 10, "test" + std::to_string(i + 1)));
-		root.printBT(__root);
-		__root = root.minValue(__root);
+		for(int i = 1; i <= 3; i++)
+			mapT.insert(ft::pair<int,int>(i * 10, i * 10));
+		mapT.__TreeRoot.printBT();
+		ft::map<int, int>::iterator	it1;
+		ft::map<int, int>::iterator	it2;
+
+		it1 = mapT.begin();
+		it2 = mapT.end();
 		
-		LOG(__root->key.second);
-		__root = root.inOrderSuccessor(__root->par,__root);
-		LOG(__root->key.second);
-		__root = root.inOrderSuccessor(__root->par,__root);
-		LOG(__root->key.second);
-		__root = root.inOrderSuccessor(__root->par,__root);
-		LOG(__root->key.second);
-		__root = root.inOrderSuccessor(__root->par,__root);
-		LOG(__root->key.second);
-		__root = root.inOrderSuccessor(__root->par,__root);
-		LOG(__root->key.second);
-		__root = root.inOrderPredecessor(__root->par);
-		LOG(__root->key.second);
-		__root = root.inOrderPredecessor(__root->par);
-		LOG(__root->key.second);
+
+		int i = 0;
+		while (it1 != it2 && i < 5)
+		// while (it1 != it2)
+		{
+			LOG((*it1).first);
+			it1++;
+			i++;
+		}
 		// for(int i = 0; i < 100; i++)
 		// 	test.insert(ft::make_pair<int, int>(i * 10, i * 10));
 		// test.debug();
