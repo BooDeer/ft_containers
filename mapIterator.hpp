@@ -32,13 +32,19 @@ class	mapIterator
 		}
 		//* Initialization constructor.
 		mapIterator(const iterator_type& src){
-		
-			__Tree = src;
+			LOG(__Tree.mv_ch);
+			__Tree.__root = src.__root;
+			__Tree.mv_ch  = src.mv_ch;
+			__Tree.end_node = src.end_node;
+			LOG(__Tree.mv_ch);
 		}
 
 		mapIterator& operator=(const mapIterator& rhs )
 		{
-			this->__Tree = rhs.__Tree;
+			// this->__Tree = rhs.__Tree;
+			__Tree.__root	= rhs.__Tree.__root;
+			__Tree.mv_ch	= rhs.__Tree.mv_ch;
+			__Tree.end_node = rhs.__Tree.end_node;
 			return *this;
 		}
 		~mapIterator ( void )
@@ -93,6 +99,6 @@ class	mapIterator
 		{
 			return __Tree.operator->();
 		}
-	private:
+	public:
 		iterator_type				__Tree;
 };

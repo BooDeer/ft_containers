@@ -589,6 +589,17 @@ class AvlBST
 			this->__root	= copy_helper(root);
 			this->mv_ch		= copy_helper(copy);
 		};
+		AvlBST(Node *root, Node* copy, Node *end)
+		{
+			this->__root	= copy_helper(root);
+			if (copy != NULL)
+				this->mv_ch		= copy_helper(copy);
+			else
+				this->mv_ch		= end;
+			LOG("===========================================================");
+			LOG("-->" << this->mv_ch << " vs -->" << end);
+			this->end_node	= end;
+		};
 		//* Assignement operator. Should be a deep copy not shallow.
 		AvlBST& operator=( const AvlBST& rhs)
 		{
@@ -596,7 +607,10 @@ class AvlBST
 			__alloc	= rhs.__alloc;
 			__cmp	= rhs.__cmp;
 			__root	= copy_helper(rhs.__root);
-			mv_ch	= copy_helper(rhs.mv_ch);
+			if (mv_ch != NULL)
+				mv_ch	= copy_helper(rhs.mv_ch);
+			else
+				mv_ch = rhs.end_node;
 
 			// __root	= rhs.__root;
 			// mv_ch	= rhs.mv_ch;
@@ -611,12 +625,17 @@ class AvlBST
 		};
 		AvlBST	begin()
 		{
-			return AvlBST(__root, minValue());
+			return AvlBST(__root, minValue(), end_node);
+		}
+		AvlBST	end()
+		{
+			return AvlBST(__root, NULL, end_node);
 		}
 	//! Insertion methods.
 	public:
 		//* Default constructor.
 		AvlBST( const allocator_type& alloc = allocator_type() ): __root(NULL), mv_ch(NULL), __alloc(alloc) {
+			end_node = __alloc.allocate(1);
 		};
 
 	//! Arithmetic operators.
@@ -624,6 +643,8 @@ class AvlBST
 		AvlBST& operator++()
 		{
 			mv_ch = inOrderSuccessor(mv_ch);
+			if(mv_ch == NULL)
+				mv_ch = end_node;
 			return *this;
 		}
 		AvlBST& operator++(int)
@@ -667,6 +688,7 @@ class AvlBST
 		//* Private attributes.
 		Node								*__root; //* The head of the BST.
 		Node								*mv_ch; //* Aka moving child, a sub node that may change. (during the arithmetic operations)
+		Node								*end_node;
 		__Compare							__cmp;
 		Allocator							allocPAIR;
 		__allocTy							__alloc;

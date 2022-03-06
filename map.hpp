@@ -124,11 +124,11 @@ namespace ft
 
 			iterator	end()
 			{
-				return iterator(AvlBST<value_type, key_compare, Alloc>());
+				return iterator(__TreeRoot.end());
 			}
 			const_iterator	end() const
 			{
-				return const_iterator(AvlBST<value_type, key_compare, Alloc>());
+				return const_iterator(__TreeRoot.end());
 			}
 		//! Operators.
 		void			clear()
