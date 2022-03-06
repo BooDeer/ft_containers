@@ -596,8 +596,8 @@ class AvlBST
 				this->mv_ch		= copy_helper(copy);
 			else
 				this->mv_ch		= end;
-			LOG("===========================================================");
-			LOG("-->" << this->mv_ch << " vs -->" << end);
+			// LOG("===========================================================");
+			// LOG("-->" << this->mv_ch << " vs -->" << end);
 			this->end_node	= end;
 		};
 		//* Assignement operator. Should be a deep copy not shallow.
@@ -655,7 +655,10 @@ class AvlBST
 		}
 		AvlBST& operator--()
 		{
-			mv_ch = inOrderPredecessor(mv_ch);
+			if (mv_ch == end_node)
+				mv_ch = maxValue(__root);
+			else
+				mv_ch = inOrderPredecessor(mv_ch);
 			return *this;
 		}
 		AvlBST& operator--(int)

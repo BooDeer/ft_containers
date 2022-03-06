@@ -32,11 +32,9 @@ class	mapIterator
 		}
 		//* Initialization constructor.
 		mapIterator(const iterator_type& src){
-			LOG(__Tree.mv_ch);
 			__Tree.__root = src.__root;
 			__Tree.mv_ch  = src.mv_ch;
 			__Tree.end_node = src.end_node;
-			LOG(__Tree.mv_ch);
 		}
 
 		mapIterator& operator=(const mapIterator& rhs )
@@ -86,8 +84,6 @@ class	mapIterator
 		{ return __x.__Tree.mv_ch == __y.__Tree.mv_ch; }
 		friend bool operator!=	(const mapIterator& __x, const mapIterator& __y)
 		{
-			std::cout << "Address of the first 	element: "	<< __x.__Tree.mv_ch << std::endl;
-			std::cout << "Address of the second element: "	<< __y.__Tree.mv_ch << std::endl;
 			return __x.__Tree.mv_ch != __y.__Tree.mv_ch; }
 
 		reference	operator*() const	//! Why does the map iterator return a pointer to the pair.
