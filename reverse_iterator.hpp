@@ -17,7 +17,7 @@ namespace ft
 
 		public:
 			//! The canonical form.
-			reverse_iterator( void ): __Current(nullptr) {};
+			reverse_iterator( void ){};
 			explicit reverse_iterator(iterator_type it): __Current(it) {};
 			template<typename Iter>
 			reverse_iterator	(const reverse_iterator<Iter>& rev_it)

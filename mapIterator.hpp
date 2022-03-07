@@ -24,8 +24,7 @@ class	mapIterator
 	//! The canonical form.
 	public:
 		//* Default constructor.
-		mapIterator ( void ) {  
-			};
+		mapIterator ( void ) {};
 		//* Copy constructor.
 		mapIterator(const mapIterator& src) {
 			*this = src;

@@ -83,14 +83,22 @@ namespace ft
 				return __Alloc.max_size();
 			}
 			ft::pair<iterator, bool>	insert(const value_type& val)
+			// void	insert(const value_type& val)
 			{
-				typename AvlBST<value_type, key_compare, Alloc>::Node*	temp;
-				if ((temp = __TreeRoot.searchNode(__TreeRoot.__root, val)))
-					return ft::make_pair<iterator, bool>(iterator(AvlBST<value_type, key_compare>(__TreeRoot.__root, temp)), false);
-				__TreeRoot.insertNode(val);
-				temp = __TreeRoot.searchNode(__TreeRoot.__root, val);
-				__Size++;
-				return ft::make_pair<iterator, bool>(iterator(AvlBST<value_type, key_compare>(__TreeRoot.__root, temp)), true);
+				// typename AvlBST<value_type, key_compare, Alloc>::Node*	temp;
+				// bool													ret;
+				ft::pair<typename AvlBST<value_type, key_compare, Alloc>::Node*, bool> ret;
+				ret = __TreeRoot.insertNode(val);
+				// LOG("---> " << ret.first->key.first << ": " << ret.second);
+				if (ret.second)
+					__Size++;
+				return ft::make_pair<iterator, bool>(this->find(val.first), ret.second);
+				// if ((temp = __TreeRoot.searchNode(__TreeRoot.__root, val)))
+				// 	return ft::make_pair<iterator, bool>(iterator(AvlBST<value_type, key_compare>(__TreeRoot.__root, temp)), false);
+				// LOG("--->" << __TreeRoot.insertNode(val).second);
+				// temp = __TreeRoot.searchNode(__TreeRoot.__root, val);
+				// __Size++;
+				// return ft::make_pair<iterator, bool>(iterator(AvlBST<value_type, key_compare>(__TreeRoot.__root, ret.first)), ret.second);
 			};
 			//! Am I retarded or that's how it should be done?
 			//* Yes I am indeed retarded, the hint is to help you reach faster the required node, if not found, then insert from the root.
@@ -141,7 +149,7 @@ namespace ft
 			typename AvlBST<value_type, key_compare, Alloc>::Node*	temp;
 			if ( (temp = __TreeRoot.searchNode(__TreeRoot.__root, ft::make_pair<key_type, mapped_type>(k, mapped_type()))))
 				return temp->key.second;
-			temp = __TreeRoot.insertNode(__TreeRoot.__root,NULL, ft::make_pair<key_type, mapped_type>(k, mapped_type()));
+			temp = __TreeRoot.insertNode(__TreeRoot.__root,NULL, ft::make_pair<key_type, mapped_type>(k, mapped_type())).first;
 			return temp->key.second;
 		}
 		key_compare	key_comp() const
@@ -192,14 +200,21 @@ namespace ft
 
 		iterator	find(const key_type& k)
 		{
-			typename AvlBST<value_type, key_compare, Alloc>::Node*	temp;
-
-			temp = __TreeRoot.searchNode(__TreeRoot.__root, k);
-			if (temp)
-				return (iterator(AvlBST<value_type, key_compare, Alloc>(__TreeRoot.__root, temp)));
-			
-				return iterator(AvlBST<value_type, key_compare, Alloc>());
+			if (__TreeRoot.__root != NULL)
+				return(iterator(__TreeRoot.search_unique(k, __TreeRoot.__root)));
+			// else
+				// return (iterator());
 		}
+		// iterator	find(const key_type& k)
+		// {
+		// 	typename AvlBST<value_type, key_compare, Alloc>::Node*	temp;
+
+		// 	temp = __TreeRoot.searchNode(__TreeRoot.__root, k);
+		// 	if (temp)
+		// 		return (iterator(AvlBST<value_type, key_compare, Alloc>(__TreeRoot.__root, temp)));
+			
+		// 		return iterator(AvlBST<value_type, key_compare, Alloc>());
+		// }
 		allocator_type get_allocator() const
 		{
 			return allocator_type();
@@ -214,4 +229,5 @@ namespace ft
 			key_compare										__cmp;
 
 	};
+	
 };

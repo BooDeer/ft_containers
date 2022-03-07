@@ -274,8 +274,9 @@ class AvlBST
 		return root;
 	}
 
-	struct Node* insertNode(struct Node* root,struct Node* parent,	value_type key)
+	ft::pair<Node*, bool>	insertNode(struct Node* &root,struct Node* parent,	value_type key)
 	{
+		ft::pair<Node*, bool>	pair_ret;
 		if (root == NULL) {
 			root = __alloc.allocate(1);
 			__alloc.construct(root, Node(NULL, NULL, NULL, key.first, key.second, 0));
@@ -284,10 +285,11 @@ class AvlBST
 			root->left = NULL;
 			root->right = NULL;
 			root->par = parent;
+			pair_ret = (ft::make_pair(root, true));
 		}
 	
 		else if (root->key.first > key.first) {
-			root->left = insertNode(root->left,	root, key);
+			pair_ret = insertNode(root->left,	root, key);
 			int firstheight = 0;
 			int secondheight = 0;
 	
@@ -308,7 +310,7 @@ class AvlBST
 		}
 	
 		else if (root->key < key) {
-			root->right = insertNode(root->right, root, key);
+			pair_ret = insertNode(root->right, root, key);
 			int firstheight = 0;
 			int secondheight = 0;
 	
@@ -328,9 +330,10 @@ class AvlBST
 			}
 		}
 		else {
+			pair_ret = (ft::make_pair(root, false));
 		}
 		Updateheight(root);
-		return root;
+		return pair_ret;
 	}
 
 	//! Debugging functions.
@@ -357,58 +360,6 @@ class AvlBST
 
 	struct Node*	eraseNode(Node* root, value_type key)
 	{
-		// if ((root->left == NULL && root->right == NULL))
-		// {
-		// 	if (key.first == root->key.first)
-		// 	{
-		// 		//delete it here
-		// 		__alloc.destroy(root);
-		// 		__alloc.deallocate(root, 1);
-		// 	}
-		// 	return NULL;
-		// }
-
-		// Node *tmp;
-		// if (key.first < root->key.first)
-		// 	root->left = eraseNode(root->left, key);
-		// else if (key.first > root->key.first)
-		// 	root->right = eraseNode(root->right, key);
-		// else
-		// {
-		// 	if (root->left != NULL)
-		// 	{
-		// 		tmp = maxValue(root->left);
-		// 		Node * tmp_r = root->right;
-		// 		Node * tmp_l = root->left;
-		// 		Node * tmp_p = root->par;
-		// 		int		tmp_h = root->height;
-		// 		// root = __alloc.allocate(1);
-		// 		__alloc.construct(root, Node(tmp_r, tmp_r, tmp_l, tmp.first, tmp.second, tmp_h));
-		// 		root->left = deleteNode(root->left, tmp->par->key.first);
-		// 	}
-		// 	else if (root->right != NULL)
-		// 	{
-		// 		tmp = minValue(root->left);
-		// 		Node * tmp_r = root->right;
-		// 		Node * tmp_l = root->left;
-		// 		Node * tmp_p = root->par;
-		// 		int		tmp_h = root->height;
-		// 		// root = __alloc.allocate(1);
-		// 		__alloc.construct(root, Node(tmp_r, tmp_r, tmp_l, tmp.first, tmp.second, tmp_h));
-		// 		root->right = deleteNode(root->right, tmp->par->key.first);				
-		// 	}
-		// }
-
-
-
-
-
-
-
-
-
-
-
 		if (root != NULL) {
 			// If the node is found
 			if (root->key.first == key.first)
@@ -517,12 +468,12 @@ class AvlBST
 			printBT("", __root, false);    
 		}
 
-		bool insertNode(value_type key)
+		ft::pair<Node*, bool> insertNode(value_type key)
 		{
-			if (this->searchNode(__root, key))
-				return false;
-			__root = insertNode(__root, NULL, key);
-			return true;
+			// if (this->searchNode(__root, key))
+			// 	return false;
+			return insertNode(__root, NULL, key);
+			// return true;
 		}
 
 		void deleteNode(value_type key)
@@ -631,6 +582,26 @@ class AvlBST
 		{
 			return AvlBST(__root, NULL, end_node);
 		}
+
+		AvlBST	search_unique(const first_type& k, Node* root)
+		{
+			if (root && k == root->key.first)
+			{
+				AvlBST tmp;
+
+				tmp.__root = root;
+				return tmp;
+			}
+			if (root && k < root->key.first)
+			{
+				return (search_unique(k, root->left));
+			}
+			else if (root && k > root->key.first)
+			{
+				return (search_unique(k, root->right));
+			}
+		}
+
 	//! Insertion methods.
 	public:
 		//* Default constructor.
