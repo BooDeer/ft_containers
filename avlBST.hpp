@@ -585,20 +585,28 @@ class AvlBST
 
 		AvlBST	search_unique(const first_type& k, Node* root)
 		{
-			if (root && k == root->key.first)
+			try
 			{
-				AvlBST tmp;
+				if (root && k == root->key.first)
+				{
+					AvlBST tmp;
 
-				tmp.__root = root;
-				return tmp;
+					tmp.__root = root;
+					return tmp;
+				}
+				if (root && k < root->key.first)
+				{
+					return (search_unique(k, root->left));
+				}
+				else if (root && k > root->key.first)
+				{
+					return (search_unique(k, root->right));
+				}
+				throw "Error";
 			}
-			if (root && k < root->key.first)
+			catch (const char *s)
 			{
-				return (search_unique(k, root->left));
-			}
-			else if (root && k > root->key.first)
-			{
-				return (search_unique(k, root->right));
+				throw s;
 			}
 		}
 

@@ -87,12 +87,38 @@ namespace ft
 			{
 				// typename AvlBST<value_type, key_compare, Alloc>::Node*	temp;
 				// bool													ret;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 				ft::pair<typename AvlBST<value_type, key_compare, Alloc>::Node*, bool> ret;
 				ret = __TreeRoot.insertNode(val);
 				// LOG("---> " << ret.first->key.first << ": " << ret.second);
 				if (ret.second)
 					__Size++;
 				return ft::make_pair<iterator, bool>(this->find(val.first), ret.second);
+
+
+
+
+
+
+
+
+
+
 				// if ((temp = __TreeRoot.searchNode(__TreeRoot.__root, val)))
 				// 	return ft::make_pair<iterator, bool>(iterator(AvlBST<value_type, key_compare>(__TreeRoot.__root, temp)), false);
 				// LOG("--->" << __TreeRoot.insertNode(val).second);
@@ -201,9 +227,19 @@ namespace ft
 		iterator	find(const key_type& k)
 		{
 			if (__TreeRoot.__root != NULL)
-				return(iterator(__TreeRoot.search_unique(k, __TreeRoot.__root)));
-			// else
-				// return (iterator());
+			{
+				try
+				{
+					return(iterator(__TreeRoot.search_unique(k, __TreeRoot.__root)));
+				}
+				catch(const char *e)
+				{
+					return end();
+				}
+				
+			}
+			else
+				return end();
 		}
 		// iterator	find(const key_type& k)
 		// {

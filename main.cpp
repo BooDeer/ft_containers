@@ -6,7 +6,7 @@
 /*   By: hboudhir <hboudhir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/08 14:54:59 by hboudhir          #+#    #+#             */
-/*   Updated: 2022/03/06 16:22:07 by hboudhir         ###   ########.fr       */
+/*   Updated: 2022/03/08 14:36:30 by hboudhir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,9 @@
 #include "utility.hpp"
 #include "mapIterator.hpp"
 #include "map.hpp"
+#include <unistd.h>
+#include <sys/time.h>
+#define TIME_FAC 20 // the ft::map methods can be slower up to std::map methods * TIME_FAC (MAX 20)
 /*
 	// template <class iter>
 	// size_t do_distance(iter it,iter end, std::random_access_iterator_tag)
@@ -57,50 +60,88 @@
 	// 	std::cout << "test22" << std::endl;
 	// }
 */	
+time_t get_time(void)
+{
+    struct timeval time_now;
+
+    gettimeofday(&time_now, NULL);
+    time_t msecs_time = (time_now.tv_sec * 1e3) + (time_now.tv_usec / 1e3);
+    return (msecs_time);
+}
 
 int main( void )
 {
-	
-	LOG("\n\n=============================== STD::MAP  ================================\n\n");
 	{
-		// mapIterator<ft::pair<int, int> >	test;
-		ft::map<int, int>		mapT;
+            time_t start, end, diff;
 
-		for(int i = 1; i <= 3; i++)
-			mapT.insert(ft::pair<int,int>(i * 10, i * 10));
-		mapT.__TreeRoot.printBT();
-		ft::map<int, int>::iterator	it1;
-		ft::map<int, int>::iterator	it2;
+            std::map<int, std::string> m;
+            ft::map<int, std::string> ft_m;
+			// ft_m.insert(ft::make_pair(1, "value"));
+            for (size_t i = 0; i < 1e6; ++i)
+            {
+                // m.insert(std::make_pair(i, "value"));
+                ft_m.insert(ft::make_pair(i, "value"));
+                // LOG((*(ft_m.insert(ft::make_pair(i, "value")).first)).first);
+				 std::cout << "-->" << i << std::endl;
+            }
+            start = get_time();
+            for (std::map<int, std::string>::iterator it = m.begin(); it != m.end(); ++it)
+                ;
+            end = get_time();
+            diff = end - start;
+            diff = (diff) ? (diff * TIME_FAC) : TIME_FAC;
 
-		it1 = mapT.begin();
-		it2 = mapT.end();
+            ualarm(diff * 1e3, 0);
+            for (ft::map<int, std::string>::iterator it = ft_m.begin(); it != ft_m.end(); ++it)
+                ;
+            ualarm(0, 0);
+        }
+	// LOG("\n\n=============================== STD::MAP  ================================\n\n");
+	// {
+	// 	// mapIterator<ft::pair<int, int> >	test;
+	// 	ft::map<int, int>		mapT;
+	// 	// LOG("The end_node address: " << mapT.__TreeRoot.end_node);
+	// 	for(int i = 1; i <= 5; i++)
+	// 		mapT.insert(ft::pair<int,int>(i * 10, i * 10));
+	// 	mapT.insert(ft::pair<int,int>(10, 10));
+	// 	mapT.__TreeRoot.printBT();
+	// 	// LOG("The end_node address: " << mapT.__TreeRoot.end_node);
+	// 	// mapT.__TreeRoot.printBT();
+	// 	// ft::map<int, int>::iterator	it1;
+	// 	// ft::map<int, int>::iterator	it2;
+	// 	// LOG("The end_node address: " << mapT.__TreeRoot.end_node);
 		
-
-		int i = 0;
-		while (it1 != it2 && i < 5)
-		// while (it1 != it2)
-		{
-			LOG((*it1).first);
-			it1++;
-			i++;
-		}
-		// for(int i = 0; i < 100; i++)
-		// 	test.insert(ft::make_pair<int, int>(i * 10, i * 10));
-		// test.debug();
-		// test.deleteNode(ft::make_pair<int, int>(630, 100));
-		// test.debug();
-		// AvlBST<ft::pair<int, std::string> >	test;
+	// 	// it1 = mapT.begin();
+	// 	// LOG("First tree" << it1.__Tree.mv_ch);
+	// 	// it2 = mapT.end();
+	// 	// it2--;
+	// 	// it2--;
+	// 	// LOG((*it2).first);
+	// 	// int i = 0;
+	// 	// // while (it1 != it2)
+	// 	// // while (it1 != it2)
+	// 	// // {
+	// 	// // 	std::cout << (*it1).first << " ";
+	// 	// // 	it1++;
+	// 	// // }
+	// 	// LOG("");
+	// 	// for(int i = 0; i < 100; i++)
+	// 	// 	test.insert(ft::make_pair<int, int>(i * 10, i * 10));
+	// 	// test.debug();
+	// 	// test.deleteNode(ft::make_pair<int, int>(630, 100));
+	// 	// test.debug();
+	// 	// AvlBST<ft::pair<int, std::string> >	test;
 		
-		// for(int i = 1; i <= 10; i++)
-		// 	test.__root = test.insertNode(test.__root, ft::make_pair<int, std::string>(i * 10, std::string("This is a test")));
-		// test.printBT(test.__root);
-		// for(int i = 1; i < 10; i++)
-		// 	__root = insertNode(__root, i * 10);
-		// printBT(__root);
-		// __root = deleteNode(__root, 60);
-		// __root = deleteNode(__root, 70);
-		// printBT(__root);
-	}
+	// 	// for(int i = 1; i <= 10; i++)
+	// 	// 	test.__root = test.insertNode(test.__root, ft::make_pair<int, std::string>(i * 10, std::string("This is a test")));
+	// 	// test.printBT(test.__root);
+	// 	// for(int i = 1; i < 10; i++)
+	// 	// 	__root = insertNode(__root, i * 10);
+	// 	// printBT(__root);
+	// 	// __root = deleteNode(__root, 60);
+	// 	// __root = deleteNode(__root, 70);
+	// 	// printBT(__root);
+	// }
 	LOG("============================== STD::VECTOR  ==============================\n\n");
 	{
 
