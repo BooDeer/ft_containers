@@ -18,8 +18,8 @@ namespace	ft
 			typedef typename T::Node						node;
 			typedef typename T::value_type					value_type;
 			typedef	std::ptrdiff_t							difference_type;
-			typedef Pointer									pointer;
-			typedef Reference								reference;
+			typedef value_type*									pointer;
+			typedef value_type&								reference;
 
 
 		public:
