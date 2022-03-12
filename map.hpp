@@ -26,8 +26,8 @@ namespace ft
 			typedef typename allocator_type::const_pointer					const_pointer;
 			
 			//* Iterators.
-			typedef	mapIterator<AvlBST<value_type, key_compare> >							iterator;
-			typedef mapIterator<AvlBST<value_type, key_compare> >						const_iterator;
+			typedef	mapIterator<AvlBST<value_type, key_compare, Alloc> >							iterator;
+			typedef mapIterator<const AvlBST<value_type, key_compare, Alloc> >						const_iterator;
 			typedef ft::reverse_iterator<iterator>									reverse_iterator;
 			typedef ft::reverse_iterator<const_iterator>							const_reverse_iterator;
 			typedef std::ptrdiff_t									difference_type;
@@ -147,22 +147,22 @@ namespace ft
 		public:
 			iterator	begin()
 			{
-				return iterator(__TreeRoot.begin());
+				return iterator(&__TreeRoot, __TreeRoot.begin());
 			}
 			const_iterator	begin() const
 			{
-				return const_iterator(__TreeRoot.begin());
+				return const_iterator(&__TreeRoot, __TreeRoot.begin());
 			}
 
 			//? Is this working? I don't feel like it should be working but I guess it does work?!
 
 			iterator	end()
 			{
-				return iterator(__TreeRoot.end());
+				return iterator(&__TreeRoot,__TreeRoot.end());
 			}
 			const_iterator	end() const
 			{
-				return const_iterator(__TreeRoot.end());
+				return const_iterator(&__TreeRoot,__TreeRoot.end());
 			}
 		//! Operators.
 		void			clear()
@@ -230,7 +230,7 @@ namespace ft
 			{
 				try
 				{
-					return(iterator(__TreeRoot.search_unique(k, __TreeRoot.__root)));
+					return(iterator(&__TreeRoot, __TreeRoot.search_unique(k, __TreeRoot.__root)));
 				}
 				catch(const char *e)
 				{

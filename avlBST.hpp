@@ -16,9 +16,62 @@ class AvlBST
 		Node				*left;				//* The left child node.
 		__T					key;				//* The key hold by the node.
 		int					height;				//* The height of the node.
-
+		__Compare			_cmp;
 		Node(__T val): key(val) {};
 		Node(Node *p, Node *r, Node *l, first_type k1,second_type k2, int h): par(p), right(r), left(l), key(k1, k2), height(h) {};
+
+		Node* next_node(Node* n)
+		{
+			if (n->right != NULL)
+				return min_node(n->right);
+
+			Node* p = n->par;
+			while (p != NULL && n == p->right) {
+				n = p;
+				p = p->par;
+			}
+			return p;
+		};
+
+		Node*	past_node(Node* node)
+		{
+			if (node == NULL)
+				return NULL;
+			
+			if (node->left != NULL)
+			{
+				node = node->left;
+				while (node->right != NULL)
+					node = node->right;
+				return node;
+			}
+			Node* par = node->par;
+			while (par != NULL && par->left == node)
+			{
+				node = par;
+				par = par->par;
+			}
+			return par;
+		}
+		
+		Node*	max_node(Node *root)
+		{
+			Node* temp = root;
+			
+			while(temp && temp->right)
+				temp = temp->right;
+			return temp;
+		}
+
+		Node*	min_node(Node *root)
+		{
+			Node* current = root;
+		
+			while (current->left != NULL) {
+				current = current->left;
+			}
+			return current;			
+		}
 	};
 	public:
 		//* Types.
@@ -574,24 +627,24 @@ class AvlBST
 			//TODO: to be implemented.
 			// destroy_noodles();
 		};
-		AvlBST	begin()
+		Node*	begin()
 		{
-			return AvlBST(__root, minValue(), end_node);
+			return minValue();
 		}
-		AvlBST	end()
+		Node*	end()
 		{
-			return AvlBST(__root, NULL, end_node);
+			return end_node;
 		}
 
-		AvlBST	search_unique(const first_type& k, Node* root)
+		Node*	search_unique(const first_type& k, Node* root)
 		{
 			try
 			{
 				if (root && k == root->key.first)
 				{
-					AvlBST tmp;
+					Node* tmp;
 
-					tmp.__root = root;
+					tmp = root;
 					return tmp;
 				}
 				if (root && k < root->key.first)
@@ -619,19 +672,19 @@ class AvlBST
 
 	//! Arithmetic operators.
 	public:
-		AvlBST& operator++()
+		Node* operator++()
 		{
 			mv_ch = inOrderSuccessor(mv_ch);
 			if(mv_ch == NULL)
 				mv_ch = end_node;
-			return *this;
+			return mv_ch;
 		}
-		AvlBST& operator++(int)
-		{
-			AvlBST	tmp(*this);
-			++(*this);
-			return tmp;
-		}
+		// AvlBST& operator++(int)
+		// {
+		// 	AvlBST	tmp(*this);
+		// 	++(*this);
+		// 	return tmp;
+		// }
 		AvlBST& operator--()
 		{
 			if (mv_ch == end_node)

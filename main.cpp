@@ -6,7 +6,7 @@
 /*   By: hboudhir <hboudhir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/08 14:54:59 by hboudhir          #+#    #+#             */
-/*   Updated: 2022/03/08 14:36:30 by hboudhir         ###   ########.fr       */
+/*   Updated: 2022/03/12 14:16:09 by hboudhir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,29 +72,56 @@ time_t get_time(void)
 int main( void )
 {
 	{
-            time_t start, end, diff;
+            // time_t start, end, diff;
 
             std::map<int, std::string> m;
-            ft::map<int, std::string> ft_m;
-			// ft_m.insert(ft::make_pair(1, "value"));
-            for (size_t i = 0; i < 1e6; ++i)
-            {
-                // m.insert(std::make_pair(i, "value"));
-                ft_m.insert(ft::make_pair(i, "value"));
-                // LOG((*(ft_m.insert(ft::make_pair(i, "value")).first)).first);
-				 std::cout << "-->" << i << std::endl;
-            }
-            start = get_time();
-            for (std::map<int, std::string>::iterator it = m.begin(); it != m.end(); ++it)
-                ;
-            end = get_time();
-            diff = end - start;
-            diff = (diff) ? (diff * TIME_FAC) : TIME_FAC;
+            ft::map<int, int> my_m;
+            ft::map<int, int>::iterator itB;
+            ft::map<int, int>::iterator itE;
 
-            ualarm(diff * 1e3, 0);
-            for (ft::map<int, std::string>::iterator it = ft_m.begin(); it != ft_m.end(); ++it)
-                ;
-            ualarm(0, 0);
+			for(int i = 0; i < 5; i++)
+				my_m.insert(ft::make_pair(i * 10, i * 10));
+			// std::cout << "----> end node: " << my_m.__TreeRoot.end_node << std::endl;
+			itB = my_m.begin();
+			// std::cout << "----> begin node: " << my_m.begin().__Node << std::endl;
+			itE = my_m.end();
+			// std::cout << "----> end node: " <<  my_m.end().__Node << std::endl;
+			// std::cout << "----> end node: " <<  itE.__Node << std::endl;
+			int i = 0;
+			my_m.__TreeRoot.printBT();
+			for(; itB != itE; itB++)
+				// std::cout << "----> end node: " <<  itB.__Node << std::endl;
+				LOG((*itB).first);
+				std::cout << "----> end node: " <<  itB.__Node << std::endl;
+			
+            // ft::map<int, std::string>::reverse_iterator it;
+            // ft::map<int, std::string>::const_reverse_iterator it;
+            // ft::map<int, char>::iterator it = my_m.begin();
+			// ++it;
+			// ft::map<int, char>::iterator my_rit2(my_m.end());
+			// ft::map<int, char>::const_iterator c_it, c_ob(my_m.end());
+			// c_it = my_rit2;
+			// c_it++;
+			// my_rit2->first;
+			// // ft_m.insert(ft::make_pair(1, "value"));
+            // for (size_t i = 0; i < 1e6; ++i)
+            // {
+            //     // m.insert(std::make_pair(i, "value"));
+            //     ft_m.insert(ft::make_pair(i, "value"));
+            //     // LOG((*(ft_m.insert(ft::make_pair(i, "value")).first)).first);
+			// 	 std::cout << "-->" << i << std::endl;
+            // }
+            // start = get_time();
+            // for (std::map<int, std::string>::iterator it = m.begin(); it != m.end(); ++it)
+            //     ;
+            // end = get_time();
+            // diff = end - start;
+            // diff = (diff) ? (diff * TIME_FAC) : TIME_FAC;
+
+            // ualarm(diff * 1e3, 0);
+            // for (ft::map<int, std::string>::iterator it = ft_m.begin(); it != ft_m.end(); ++it)
+            //     ;
+            // ualarm(0, 0);
         }
 	// LOG("\n\n=============================== STD::MAP  ================================\n\n");
 	// {
@@ -168,7 +195,7 @@ int main( void )
 
 
 
-
+		std::vector<int> test;
 
 
 
