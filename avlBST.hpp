@@ -340,7 +340,8 @@ class AvlBST
 			root->par = parent;
 			pair_ret = (ft::make_pair(root, true));
 		}
-	
+		else if (root->key.first == key.first)
+			return(ft::make_pair(root, false));
 		else if (root->key.first > key.first) {
 			pair_ret = insertNode(root->left,	root, key);
 			int firstheight = 0;
@@ -382,9 +383,9 @@ class AvlBST
 				}
 			}
 		}
-		else {
-			pair_ret = (ft::make_pair(root, false));
-		}
+		// else {
+		// 	pair_ret = (ft::make_pair(root, true));
+		// }
 		Updateheight(root);
 		return pair_ret;
 	}
