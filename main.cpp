@@ -6,7 +6,7 @@
 /*   By: hboudhir <hboudhir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/08 14:54:59 by hboudhir          #+#    #+#             */
-/*   Updated: 2022/03/12 14:16:09 by hboudhir         ###   ########.fr       */
+/*   Updated: 2022/03/13 18:37:55 by hboudhir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,26 +73,47 @@ int main( void )
 {
 	{
             // time_t start, end, diff;
+			ft::map<int, int>				mapT;
+			ft::map<int, int>::iterator	it;
+        	ft::pair<ft::map<char, int>::iterator, bool> ft_ret;
 
-            std::map<int, std::string> m;
-            ft::map<int, int> my_m;
-            ft::map<int, int>::iterator itB;
-            ft::map<int, int>::iterator itE;
+			// insert some values:
+			mapT.insert(ft::make_pair(1, 10));
+			mapT.insert(ft::make_pair(2, 20));
+			mapT.insert(ft::make_pair(3, 30));
+			mapT.insert(ft::make_pair(4, 30));
+			// mapT.insert(ft::make_pair(5, 30));
+			// mapT.insert(ft::make_pair(6, 30));
 
-			for(int i = 0; i < 5; i++)
-				my_m.insert(ft::make_pair(i * 10, i * 10));
-			// std::cout << "----> end node: " << my_m.__TreeRoot.end_node << std::endl;
-			itB = my_m.begin();
-			// std::cout << "----> begin node: " << my_m.begin().__Node << std::endl;
-			itE = my_m.end();
-			// std::cout << "----> end node: " <<  my_m.end().__Node << std::endl;
-			// std::cout << "----> end node: " <<  itE.__Node << std::endl;
-			int i = 0;
-			my_m.__TreeRoot.printBT();
-			for(; itB != itE; itB++)
-				// std::cout << "----> end node: " <<  itB.__Node << std::endl;
-				LOG((*itB).first);
-				std::cout << "----> end node: " <<  itB.__Node << std::endl;
+			// m['a'] = 10;
+			// m['b'] = 20;
+			// m['c'] = 30;
+			// m['d'] = 40;
+			// m['e'] = 50;
+			// m['f'] = 60;
+
+			// for(int i = 0; i < 5; i++)
+			// 	mapT.insert(ft::make_pair('0' + i, i * 10));
+			// it = mapT.find('b');
+			// mapT.erase(it);
+			mapT.__TreeRoot.printBT();
+			mapT.erase(2);
+			LOG(mapT.__TreeRoot->first);
+			// mapT.__TreeRoot.printBT();
+			// it = mapT.begin();
+			// LOG(it->first);
+			// for (; it != mapT.end(); it++)
+			// 	;
+			// mapT.__TreeRoot.printBT();
+			// ft_ret = mapT.insert(ft::pair<char, int>('2', 500));
+			// // std::cout << "----> end node: " << my_m.__TreeRoot.end_node << std::endl;
+			// itB = my_m.begin();
+			// // std::cout << "----> begin node: " << my_m.begin().__Node << std::endl;
+			// itE = my_m.end();
+			// // std::cout << "----> end node: " <<  my_m.end().__Node << std::endl;
+			// // std::cout << "----> end node: " <<  itE.__Node << std::endl;
+			// int i = 0;
+			// my_m.__TreeRoot.printBT();
 			
             // ft::map<int, std::string>::reverse_iterator it;
             // ft::map<int, std::string>::const_reverse_iterator it;
@@ -171,7 +192,16 @@ int main( void )
 	// }
 	LOG("============================== STD::VECTOR  ==============================\n\n");
 	{
+			std::map<char, int>				mapT;
+			// std::map<char, int>::iterator	it;
+        	std::pair<std::map<char, int>::iterator, bool> std_ret;
+			
 
+			for(int i = 0; i < 5; i++)
+				mapT.insert(std::make_pair('0' + i, i * 10));
+
+			std_ret = mapT.insert(std::pair<char, int>('2', 500));
+			LOG(std_ret.second);
 
 
 
