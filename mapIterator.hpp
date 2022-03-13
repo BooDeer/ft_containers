@@ -56,14 +56,14 @@ namespace	ft
 			~mapIterator( void ) {}
 
 
-			value_type&	operator*()
+			value_type&	operator*() const
 			{
 				return (__Node->key);
 			}
 
 			value_type* operator->() const
 			{
-				return &(__Node->key);
+				return (&operator*());
 			}
 
 			mapIterator&	operator++()

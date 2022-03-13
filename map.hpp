@@ -5,6 +5,7 @@
 #include "mapIterator.hpp"
 #include "avlBST.hpp"
 #include "reverse_iterator.hpp"
+#include "vector.hpp"
 namespace ft
 {
 
@@ -75,7 +76,7 @@ namespace ft
 
 			bool		empty() const
 			{
-				return __Size;
+				return (__TreeRoot.__root) ? false : true;
 			}
 
 			size_type	max_size() const	//! Incorrect.
@@ -128,11 +129,11 @@ namespace ft
 			};
 			//! Am I retarded or that's how it should be done?
 			//* Yes I am indeed retarded, the hint is to help you reach faster the required node, if not found, then insert from the root.
-			// iterator insert (iterator position, const value_type& val)
-			// {
-			// 	reinterpret_cast<void>(position);
-			// 	return	insert(val).first;
-			// };
+			iterator insert (iterator position, const value_type& val)
+			{
+				(void)position;
+				return	insert(val).first;
+			};
 			template <class InputIterator>
   			void insert (InputIterator first, InputIterator last)
 			{
@@ -147,22 +148,50 @@ namespace ft
 		public:
 			iterator	begin()
 			{
-				return iterator(&__TreeRoot, __TreeRoot.begin());
+				typename AvlBST<value_type, key_compare, Alloc>::Node*	temp;
+				if (!__Size)
+					temp = __TreeRoot.end();
+				else
+					temp = __TreeRoot.begin();
+				return iterator(&__TreeRoot, temp);
 			}
 			const_iterator	begin() const
 			{
-				return const_iterator(&__TreeRoot, __TreeRoot.begin());
+				typename AvlBST<value_type, key_compare, Alloc>::Node*	temp;
+				if (!__Size)
+					temp = __TreeRoot.end();
+				else
+					temp = __TreeRoot.begin();
+				return const_iterator(&__TreeRoot, temp);
 			}
-
+			reverse_iterator	rbegin()
+			{
+				return reverse_iterator(this->end());
+			}
+			const_reverse_iterator	rbegin() const
+			{
+				return const_reverse_iterator(this->end());
+			}
 			//? Is this working? I don't feel like it should be working but I guess it does work?!
 
 			iterator	end()
 			{
-				return iterator(&__TreeRoot,__TreeRoot.end());
+				typename AvlBST<value_type, key_compare, Alloc>::Node*	temp = __TreeRoot.end();
+				return iterator(&__TreeRoot, temp);
 			}
 			const_iterator	end() const
 			{
-				return const_iterator(&__TreeRoot,__TreeRoot.end());
+				typename AvlBST<value_type, key_compare, Alloc>::Node*	temp = __TreeRoot.end();
+				return const_iterator(&__TreeRoot, temp);
+			}
+
+			reverse_iterator	rend()
+			{
+				return reverse_iterator(begin());
+			}
+			const_reverse_iterator	rend() const
+			{
+				return const_reverse_iterator(begin());
 			}
 		//! Operators.
 		void			clear()
@@ -170,13 +199,30 @@ namespace ft
 			while (__Size > 0)
 				this->erase(__TreeRoot.__root->key.first);
 		}
+
 		mapped_type&	operator[] (const key_type& k)
 		{
-			typename AvlBST<value_type, key_compare, Alloc>::Node*	temp;
-			if ( (temp = __TreeRoot.searchNode(__TreeRoot.__root, ft::make_pair<key_type, mapped_type>(k, mapped_type()))))
-				return temp->key.second;
-			temp = __TreeRoot.insertNode(__TreeRoot.__root,NULL, ft::make_pair<key_type, mapped_type>(k, mapped_type())).first;
-			return temp->key.second;
+			// ft::pair<iterator, bool>	temp;
+			// typename AvlBST<value_type, key_compare, Alloc>::Node*	temp = __TreeRoot.search_unique()
+			// temp = this->insert(ft::make_pair<key_type, mapped_type>(k, mapped_type()));
+			// return (temp.second);
+			try
+			{
+				return (__TreeRoot.search(k, __TreeRoot.__root));
+			}
+			catch(...)
+			{
+				insert(ft::make_pair(k, mapped_type()));
+				return (__TreeRoot.search(k, __TreeRoot.__root));
+				// std::cerr << e.what() << '\n';
+			}
+			
+
+
+			// if ( (temp = __TreeRoot.searchNode(__TreeRoot.__root, ft::make_pair<key_type, mapped_type>(k, mapped_type()))))
+			// 	return temp->key.second;
+			// temp = __TreeRoot.insertNode(__TreeRoot.__root,NULL, ft::make_pair<key_type, mapped_type>(k, mapped_type())).first;
+			// return temp->key.second;
 		}
 		key_compare	key_comp() const
 		{
@@ -187,14 +233,30 @@ namespace ft
 		// {
 			
 		// }
+		//! The iterator erase method won't work. (segfaults must implement the vector way)
 		void erase (iterator first, iterator last)
 		{
+			ft::vector<key_type> temp;
 			while (first != last)
 			{
-				erase(first);
+				temp.push_back(first->first);
 				first++;
 			}
+			for(size_t i = 0; i < temp.size(); i++)
+				__TreeRoot.deleteNode((temp[i]));
 		};
+			// 		void erase (iterator first_it, iterator last){
+			// 	ft::Vector <key_type> key_to_remove;
+			// 	while (first_it != last)
+			// 	{
+			// 		key_to_remove.push_back(first_it->first);
+			// 		first_it++;
+			// 	}
+			// 	for (size_t i = 0; i < key_to_remove.size(); i++)
+			// 	{
+			// 		_my_tree.remove_node(_my_tree.node, key_to_remove[i]);
+			// 	}
+			// }
 		void		erase(iterator position)
 		{
 			//TODO: (ΦзΦ). . . fuck this.

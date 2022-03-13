@@ -20,7 +20,7 @@ class AvlBST
 		Node(__T val): key(val) {};
 		Node(Node *p, Node *r, Node *l, first_type k1,second_type k2, int h): par(p), right(r), left(l), key(k1, k2), height(h) {};
 
-		Node* next_node(Node* n)
+		Node* next_node(Node* n) const
 		{
 			if (n->right != NULL)
 				return min_node(n->right);
@@ -33,7 +33,7 @@ class AvlBST
 			return p;
 		};
 
-		Node*	past_node(Node* node)
+		Node*	past_node(Node* node) const
 		{
 			if (node == NULL)
 				return NULL;
@@ -54,7 +54,7 @@ class AvlBST
 			return par;
 		}
 		
-		Node*	max_node(Node *root)
+		Node*	max_node(Node *root) const
 		{
 			Node* temp = root;
 			
@@ -63,7 +63,7 @@ class AvlBST
 			return temp;
 		}
 
-		Node*	min_node(Node *root)
+		Node*	min_node(Node *root) const
 		{
 			Node* current = root;
 		
@@ -538,7 +538,7 @@ class AvlBST
 			deleteNode(ft::make_pair<first_type, second_type>(key, second_type()));
 		}
 
-		Node*	copy_helper(Node* root)
+		Node*	copy_helper(Node* root, Node* par)
 		{
 			if (root == NULL)
 				return root;
@@ -547,9 +547,9 @@ class AvlBST
 
 			__alloc.construct(copy, Node(NULL, NULL, NULL, root->key.first, root->key.second, 0));
 			copy->height	= root->height;
-			copy->par		= root->par;
-			copy->left		= copy_helper(root->left); 
-			copy->right		= copy_helper(root->right); 
+			copy->par		= par;
+			copy->left		= copy_helper(root->left, copy); 
+			copy->right		= copy_helper(root->right, copy); 
 			return copy;
 		}
 
@@ -590,14 +590,14 @@ class AvlBST
 
 		AvlBST(Node *root, Node* copy)
 		{
-			this->__root	= copy_helper(root);
-			this->mv_ch		= copy_helper(copy);
+			this->__root	= copy_helper(root, NULL);
+			this->mv_ch		= copy_helper(copy, NULL);
 		};
 		AvlBST(Node *root, Node* copy, Node *end)
 		{
-			this->__root	= copy_helper(root);
+			this->__root	= copy_helper(root, NULL);
 			if (copy != NULL)
-				this->mv_ch		= copy_helper(copy);
+				this->mv_ch		= copy_helper(copy, NULL);
 			else
 				this->mv_ch		= end;
 			// LOG("===========================================================");
@@ -610,9 +610,9 @@ class AvlBST
 			//TODO: should copy a whole new tree instead of just one node.
 			__alloc	= rhs.__alloc;
 			__cmp	= rhs.__cmp;
-			__root	= copy_helper(rhs.__root);
+			__root	= copy_helper(rhs.__root, NULL);
 			if (mv_ch != NULL)
-				mv_ch	= copy_helper(rhs.mv_ch);
+				mv_ch	= copy_helper(rhs.mv_ch, NULL);
 			else
 				mv_ch = rhs.end_node;
 
@@ -631,9 +631,28 @@ class AvlBST
 		{
 			return minValue();
 		}
+
 		Node*	end()
 		{
 			return end_node;
+		}
+
+		second_type&	search(const first_type &k, Node*	root)
+		{
+			try
+			{
+				if (root && k == root->key.first)
+					return root->key.second;
+				if (root && k < root->key.first)
+					return search(k, root->left);
+				else if (root && k > root->key.first)
+					return search(k, root->right);
+				throw "Not found";
+			}
+			catch(const char* e)
+			{
+				throw e;
+			}
 		}
 
 		Node*	search_unique(const first_type& k, Node* root)
