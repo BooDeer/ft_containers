@@ -6,6 +6,7 @@
 #include "avlBST.hpp"
 #include "reverse_iterator.hpp"
 #include "vector.hpp"
+#include <unistd.h>
 namespace ft
 {
 
@@ -88,19 +89,6 @@ namespace ft
 			{
 				// typename AvlBST<value_type, key_compare, Alloc>::Node*	temp;
 				// bool													ret;
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -236,34 +224,43 @@ namespace ft
 		//! The iterator erase method won't work. (segfaults must implement the vector way)
 		void erase (iterator first, iterator last)
 		{
-			ft::vector<key_type> temp;
+			std::vector<key_type> temp;
+			int i = 0;
 			while (first != last)
 			{
 				temp.push_back(first->first);
 				first++;
 			}
 			for(size_t i = 0; i < temp.size(); i++)
+			{
 				__TreeRoot.deleteNode((temp[i]));
+				__Size--;	
+			}
 		};
-			// 		void erase (iterator first_it, iterator last){
-			// 	ft::Vector <key_type> key_to_remove;
-			// 	while (first_it != last)
+			// void erase (iterator first, iterator last, int )
+			// {
+			// 	std::vector<key_type> temp;
+			// 	int i = 0;
+			// 	while (first != last)
 			// 	{
-			// 		key_to_remove.push_back(first_it->first);
-			// 		first_it++;
+			// 		temp.push_back(first->first);
+			// 		first++;
+			// 		std::cout << i++ << std::endl;
 			// 	}
-			// 	for (size_t i = 0; i < key_to_remove.size(); i++)
+			// 	for(size_t i = 0; i < temp.size(); i++)
 			// 	{
-			// 		_my_tree.remove_node(_my_tree.node, key_to_remove[i]);
+			// 		__TreeRoot.deleteNode((temp[i]));
+			// 		__Size--;
 			// 	}
-			// }
+			// };
+
 		void		erase(iterator position)
 		{
 			//TODO: (ΦзΦ). . . fuck this.
 			if (__TreeRoot.searchNode(__TreeRoot.__root, (*position).first))
 			{
-				__TreeRoot.deleteNode((*position).first);
 				__Size--;
+				__TreeRoot.deleteNode((*position).first);
 			}
 		}
 		size_type	erase (const key_type& k)

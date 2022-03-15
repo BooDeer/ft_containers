@@ -32,6 +32,33 @@ class AvlBST
 			}
 			return p;
 		};
+		// Node* next_node(Node* re_node) const
+		// {
+		// 	Node* tmp;
+		// 	if(re_node->right != nullptr)
+		// 	{
+		// 		// if has right go to most left
+		// 		re_node = re_node->right;
+		// 		re_node = min_node(re_node);
+		// 	}
+		// 	else
+		// 	{
+		// 		//if not, return to parent
+		// 		tmp = re_node->par;
+		// 		while (tmp != NULL && re_node == tmp->right)
+		// 		{
+		// 			re_node = tmp;
+		// 			tmp = tmp->par;
+		// 		}
+		// 		// if right-most
+		// 		re_node = tmp;
+		// 	}
+		// 	// if(re_node == nullptr)
+		// 	// {
+		// 		// re_node = last_node;
+		// 	// }
+		// 	return re_node;
+		// };
 
 		Node*	past_node(Node* node) const
 		{
@@ -86,6 +113,15 @@ class AvlBST
 
 	//* Get the node with the smallest value.
 	Node* minValue( void ) {
+		Node* current = __root;
+		if (__root == NULL)
+			return __root;
+		while (current->left != NULL) {
+			current = current->left;
+		}
+		return current;
+	}
+	Node* minValue( void ) const {
 		Node* current = __root;
 		if (__root == NULL)
 			return __root;
@@ -199,8 +235,25 @@ class AvlBST
 			root->height = val;
 		}
 	}
-	
+	int cal_hight(Node *r)
+	{
+		if (r->right && r->left)
+		{
+			if (r->left->height < r->right->height)
+				return r->right->height  + 1;
+			else
+				return r->left->height + 1;
+		}
+		else if(r->right && r->left == NULL)
+		{
+				return r->right->height + 1;
+		}
+		else if (r->right == NULL && r->left)
+			return r->left->height + 1;
+		return 1;
+	}
 	// Function to handle Left Left Case
+	
 	struct Node* LLR(struct Node* root)
 	{
 		// LOG("LLR");
@@ -411,111 +464,339 @@ class AvlBST
 			printBT( prefix + (isLeft ? "│   " : "    "), node->right, false);
 		}
 	}
-
-	struct Node*	eraseNode(Node* root, value_type key)
+	void			swap_wnext(Node* root)
 	{
-		if (root != NULL) {
-			// If the node is found
-			if (root->key.first == key.first)
-			{
-				if (root->right == NULL && root->left != NULL)
-				{
-					if (root->par != NULL)
-					{
-						if (root->par->key.first < root->key.first)
-							root->par->right = root->left;
-						else
-							root->par->left = root->left;
-						Updateheight(root->par);
-					}
-					root->left->par = root->par;
-					root->left = Balance(root->left);
-					return root->left;
-				}
-				else if (root->left == NULL	&& root->right != NULL)
-			{
-					if (root->par != NULL)
-					{
-						if (root->par->key.first < root->key.first)
-							root->par->right = root->right;
-						else
-							root->par->left = root->right;
-						Updateheight(root->par);
-					}
-					root->right->par = root->par;
-					root->right = Balance(root->right);
-					return root->right;
-				}
-				else if (root->left == NULL && root->right == NULL)
-				{
-					if (root-> par == NULL)
-					{
-						__alloc.destroy(root);
-						__alloc.deallocate(root, 1);
-						root = NULL;
-					}
-					else if (root->par->key.first < root->key.first)
-					{
-						root->par->right = NULL;
-					}
-					else
-					{
-						root->par->left = NULL;
-					}
-	
-					if (root && root->par != NULL)
-						Updateheight(root->par);
-	
-					root = NULL;
-					return NULL;
-				}
-				else
-				{
-					struct Node* tmpnode = root;
-					tmpnode = tmpnode->right;
-					while (tmpnode->left != NULL)
-					{
-						tmpnode = tmpnode->left;
-					}
-	
-					value_type val = tmpnode->key;
-	
-					root->right
-						= eraseNode(root->right, tmpnode->key);
-	
-					// root->key = val;
-					tmpnode->par = root->par;
-					tmpnode->right = root->right;
-					tmpnode->left = root->left;
-					tmpnode->height = root->height;
-					__alloc.destroy(root);
-					__alloc.deallocate(root, 1);
-					root = __alloc.allocate(1);
-					__alloc.construct(root,Node(tmpnode->par, tmpnode->right, tmpnode->left, tmpnode->key.first, tmpnode->key.second, tmpnode->height));
-					// Node(root->par, root->right, root->left, tmpnode->key.first, tmpnode->key.second, root->height);
-					root = Balance(root);
-				}
-			}
-			else if (root->key.first < key.first)
-			{
-				root->right = eraseNode(root->right, key);
-	
-				root = Balance(root);
-			}
-			else if (root->key.first > key.first)
-			{
-				root->left = eraseNode(root->left, key);
-	
-				root = Balance(root);
-			}
-		if (root != NULL)
-		{
-			Updateheight(root);
-		}
-		}
-		return root;
+		Node* temp = root->left;
+		while(temp->right)
+			temp = temp->right;
+		ft::pair<const first_type, second_type> temp_pair(temp->key);
+		allocPAIR.construct(&temp->key, root->key);
+		allocPAIR.construct(&root->key, temp_pair);
+	}
+    void parent_correction(Node *&n, Node *p)
+    {
+        if (n == NULL)
+            return ;
+        parent_correction(n->right, n);
+        n->par = p;
+        parent_correction(n->left, n);
+    }
+
+	int		bf(Node	*&n)
+	{
+		if (n->right && n->left)
+			return n->left->height - n->right->height;
+		else if (n->right == NULL && n->left)
+			return n->left->height;
+		else if (n->right && n->left == NULL)
+			return -n->right->height;
+		return 1;		
 	}
 
+	Node *LLrotation(Node *x)
+    {
+        Node *y = x->right; // start split nodes
+        Node *T2 = y->left;
+
+        y->left = x;
+        x->right = T2;
+    
+        parent_correction(y, x->par); // start set all parrenet
+
+        // update height :)
+        if (y->left)
+            y->left->height = cal_hight(y->left);
+        if (y->right)
+            y->right->height = cal_hight(y->right);
+        y->height = cal_hight(y);
+        return y;
+    }
+    Node *RRrotation(Node *y)
+    {
+           Node *x = y->left;
+           Node *T2 = x->right;
+
+           x->right = y;
+           y->left = T2;
+        parent_correction(x, y->par);  // start set all parrenet 
+
+        // update height :)
+        if (x->right)
+            x->right->height = cal_hight(x->right);
+        if (x->left)
+            x->left->height = cal_hight(x->left);
+        x->height =  cal_hight(x);
+
+        return x;
+    }
+	struct Node*	eraseNode(Node* root, value_type key)
+	{
+
+		// if (root != NULL)
+		// {
+		// 	if (__cmp(root->key.first, key))
+		// 		eraseNode(root->right, key);
+		// 	else if (compare(key, root->key.first))
+		// 		eraseNode(root->left, key);
+		// 	else
+		// 	{
+		// 		if (root->right == NULL && root->left == NULL) //? Try changing this with corresponding height
+		// 		{
+		// 			__alloc.destroy(root);
+		// 			__alloc.deallocate(root, 1);
+		// 			root = NULL;
+		// 		}
+		// 		else if (root->right == NULL || root->left == NULL)
+		// 		{
+		// 			Node* temp = root->left ? root->left : root->right;
+		// 			Node* tempar = root->par;
+
+		// 			temp->par = root->par;
+		// 			__alloc.destroy(root);
+		// 			__alloc.deallocate(root, 1);
+		// 			root = NULL;
+
+		// 			if (tempar && __cmp(temp->key.first, tempar->key.first))
+		// 				tempar->right = temp;
+		// 			else if (tempar && __cmp(temp->key.first, tempar->key.first))
+		// 				tempar->left = temp;
+		// 			else
+		// 				root = temp;
+		// 		}
+		// 		else if (root->left && root->right)
+		// 		{
+		// 			swap_wnext(root);
+		// 			eraseNode(root->left, key);
+		// 		}
+		// 	}
+		// 	if (!root)
+		// 	{
+		// 		return ;
+		// 	}
+		// 	Updateheight(root);
+		// 	Balance(root);
+		// }
+
+		// if (root != NULL) {
+		// 	// If the node is found
+		// 	if (root->key.first == key.first)
+		// 	{
+		// 		if (root->right == NULL && root->left != NULL)
+		// 		{
+		// 			if (root->par != NULL)
+		// 			{
+		// 				if (root->par->key.first < root->key.first)
+		// 					root->par->right = root->left;
+		// 				else
+		// 					root->par->left = root->left;
+		// 				Updateheight(root->par);
+		// 			}
+		// 			root->left->par = root->par;
+		// 			root->left = Balance(root->left);
+		// 			return root->left;
+		// 		}
+		// 		else if (root->left == NULL	&& root->right != NULL)
+		// 	{
+		// 			if (root->par != NULL)
+		// 			{
+		// 				if (root->par->key.first < root->key.first)
+		// 					root->par->right = root->right;
+		// 				else
+		// 					root->par->left = root->right;
+		// 				Updateheight(root->par);
+		// 			}
+		// 			root->right->par = root->par;
+		// 			root->right = Balance(root->right);
+		// 			return root->right;
+		// 		}
+		// 		else if (root->left == NULL && root->right == NULL)
+		// 		{
+		// 			if (root-> par == NULL)
+		// 			{
+		// 				__alloc.destroy(root);
+		// 				__alloc.deallocate(root, 1);
+		// 				root = NULL;
+		// 			}
+		// 			else if (root->par->key.first < root->key.first)
+		// 			{
+		// 				root->par->right = NULL;
+		// 			}
+		// 			else
+		// 			{
+		// 				root->par->left = NULL;
+		// 			}
+	
+		// 			if (root && root->par != NULL)
+		// 				Updateheight(root->par);
+	
+		// 			root = NULL;
+		// 			return NULL;
+		// 		}
+		// 		else(root->right != NULL)
+		// 		{
+		// 			struct Node* tmpnode = root;
+		// 			tmpnode = tmpnode->right;
+		// 			while (tmpnode->left != NULL)
+		// 			{
+		// 				tmpnode = tmpnode->left;
+		// 			}
+	
+		// 			// value_type val = tmpnode->key;
+		// 			root->right = eraseNode(root->right, tmpnode->key);
+	
+	
+		// 			// root->key = val;
+		// 			tmpnode->par = root->par;
+		// 			tmpnode->right = root->right;
+		// 			tmpnode->left = root->left;
+		// 			tmpnode->height = root->height;
+		// 			// __alloc.destroy(root);
+		// 			// __alloc.deallocate(root, 1);
+		// 			root = __alloc.allocate(1);
+		// 			__alloc.construct(root,Node(tmpnode->par, tmpnode->right, tmpnode->left, tmpnode->key.first, tmpnode->key.second, tmpnode->height));
+		// 			// Node(root->par, root->right, root->left, tmpnode->key.first, tmpnode->key.second, root->height);
+		// 			root = Balance(root);
+		// 		}
+		// 		// else if (root->left != NULL)
+		// 		// {
+		// 		// 	struct Node* tmpnode = root;
+		// 		// 	tmpnode = tmpnode->left;
+		// 		// 	while (tmpnode->right != NULL)
+		// 		// 	{
+		// 		// 		tmpnode = tmpnode->right;
+		// 		// 	}
+	
+		// 		// 	// value_type val = tmpnode->key;
+		// 		// 	root->left = eraseNode(root->left, tmpnode->key);
+	
+	
+		// 		// 	// root->key = val;
+		// 		// 	tmpnode->par = root->par;
+		// 		// 	tmpnode->right = root->right;
+		// 		// 	tmpnode->left = root->left;
+		// 		// 	tmpnode->height = root->height;
+		// 		// 	// __alloc.destroy(root);
+		// 		// 	// __alloc.deallocate(root, 1);
+		// 		// 	root = __alloc.allocate(1);
+		// 		// 	__alloc.construct(root,Node(tmpnode->par, tmpnode->right, tmpnode->left, tmpnode->key.first, tmpnode->key.second, tmpnode->height));
+		// 		// 	// Node(root->par, root->right, root->left, tmpnode->key.first, tmpnode->key.second, root->height);
+		// 		// 	root = Balance(root);
+		// 		// }
+		// 	}
+		// 	else if (root->key.first < key.first)
+		// 	{
+		// 		root->right = eraseNode(root->right, key);
+	
+		// 		root = Balance(root);
+		// 	}
+		// 	else if (root->key.first > key.first)
+		// 	{
+		// 		root->left = eraseNode(root->left, key);
+	
+		// 		root = Balance(root);
+		// 	}
+		// if (root != NULL)
+		// {
+		// 	Updateheight(root);
+		// }
+		// }
+		// return root;
+		if(root == NULL)
+        {
+            // is_del = false;
+            return NULL;
+        }
+        Node *tmp;
+        if (__cmp(key.first, root->key.first))// key < root->key.first
+        {
+            // std::cout << "left test" << std::endl;
+            root->left = eraseNode(root->left, key);
+        }
+        else if (__cmp(root->key.first, key.first))//key.first > root->key.first
+        {
+            // std::cout << "right test" << std::endl;
+            root->right = eraseNode(root->right, key);
+        }
+        else if (key.first == root->key.first)
+        {
+            if (root->left != NULL)
+            {
+                tmp = maxValue(root->left);
+                Node* tmp_r = root->right;
+                Node* tmp_l = root->left;
+                Node* tmp_pa = root->par;
+                int tmp_h = root->height;
+                this->__alloc.destroy(root); // destroy old node
+                this->__alloc.deallocate(root, 1);
+                root  = this->__alloc.allocate(1);
+		// Node(Node *p, Node *r, Node *l, first_type k1,second_type k2, int h): par(p), right(r), left(l), key(k1, k2), height(h) {};
+
+                this->__alloc.construct(root, Node(tmp_pa, tmp_r, tmp_l, tmp->key.first, tmp->key.second, tmp_h)); // copy hieght and parent ........
+                root->left =  eraseNode(root->left , tmp->key); // delete next node
+            }
+            else if (root->right != NULL)
+            {
+                tmp = minValue(root->right);
+                Node* tmp_r = root->right;
+                Node* tmp_l = root->left;
+                Node* tmp_pa = root->par;
+                int tmp_h = root->height;
+                this->__alloc.destroy(root); // destroy old node
+                this->__alloc.deallocate(root, 1);
+                root  = this->__alloc.allocate(1);
+				// this->__alloc.construct(r, node<value_type>(tmp->pt.first, tmp->pt.second, tmp_pa, tmp_r, tmp_l, tmp_h));
+                this->__alloc.construct(root, Node(tmp_pa, tmp_r, tmp_l, tmp->key.first, tmp->key.second, tmp_h)); // copy hieght and parent ........
+                root->right = eraseNode(root->right , tmp->key); // delete next node
+            }
+            else
+            {
+                if(key.first == root->key.first)
+                {
+                    this->__alloc.destroy(root);
+                    this->__alloc.deallocate(root, 1);
+                }
+
+                return NULL;
+
+            }
+		}
+		    //balance cases
+			if (__root == NULL) // if root == null mean no more node for delet 
+				return NULL;
+			// update heghit
+			root->height =  cal_hight(root);
+			if (root->left)
+				root->left->height = cal_hight(root->left);
+			if (root->right)
+				root->right->height = cal_hight(root->right);
+			// Updateheight(root);
+
+			// update balance
+			if (bf(root) > 1 && bf(root->left) >= 0)
+				root = RRrotation(root); // left-left rotation
+			else if (bf(root) < -1 && bf(root->right) <= 0)
+				root = LLrotation(root);//  right-right rotation
+			else if (bf(root) < -1 && bf(root->right) > 0)
+			{
+				root->right = RRrotation(root->right); // right-left rotation
+				root = LLrotation(root);
+			}
+			else if (bf(root) > 1 && bf(root->left) < 0)
+			{
+				root->left = LLrotation(root->left); // left-right rotation
+				root = RRrotation(root);
+			}
+
+		// update parent
+			if (root->left)
+				root->left->par = root;
+			if (root->right)
+				root->right->par = root;
+		return root;
+	}
+	//! ===========================================================
+
+	//! ===========================================================
 	public:
 		void printBT( void )
 		{
@@ -566,12 +847,10 @@ class AvlBST
 			__alloc.deallocate(noodle, 1);
 			if (noodle->left)
 			{
-				LOG("Left child.");
 				noodles_destroyer(noodle->left);
 			}
 			if (noodle->right)
 			{
-				LOG("Right child.");
 				noodles_destroyer(noodle->right);
 			}
 		}
@@ -632,10 +911,18 @@ class AvlBST
 		{
 			return minValue();
 		}
+		Node*	begin() const
+		{
+			return const_cast<Node*>(minValue());
+		}
 
 		Node*	end()
 		{
 			return end_node;
+		}
+		Node*	end() const
+		{
+			return const_cast<Node*>(end_node);
 		}
 
 		second_type&	search(const first_type &k, Node*	root)

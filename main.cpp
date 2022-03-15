@@ -6,7 +6,7 @@
 /*   By: hboudhir <hboudhir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/08 14:54:59 by hboudhir          #+#    #+#             */
-/*   Updated: 2022/03/13 18:37:55 by hboudhir         ###   ########.fr       */
+/*   Updated: 2022/03/14 17:41:47 by hboudhir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,6 @@ int main( void )
             // time_t start, end, diff;
 			ft::map<int, int>				mapT;
 			ft::map<int, int>::iterator	it;
-        	ft::pair<ft::map<char, int>::iterator, bool> ft_ret;
 
 			// insert some values:
 			mapT.insert(ft::make_pair(1, 10));
@@ -96,14 +95,14 @@ int main( void )
 			// 	mapT.insert(ft::make_pair('0' + i, i * 10));
 			// it = mapT.find('b');
 			// mapT.erase(it);
-			mapT.__TreeRoot.printBT();
-			mapT.erase(2);
-			LOG(mapT.__TreeRoot->first);
+			// mapT.__TreeRoot.printBT();
+			mapT.erase(mapT.begin(), mapT.end());
+			mapT.erase(mapT.begin(), mapT.end());
+			// mapT.__TreeRoot.printBT();
+			// mapT.erase(mapT.begin(), mapT.end());
 			// mapT.__TreeRoot.printBT();
 			// it = mapT.begin();
 			// LOG(it->first);
-			// for (; it != mapT.end(); it++)
-			// 	;
 			// mapT.__TreeRoot.printBT();
 			// ft_ret = mapT.insert(ft::pair<char, int>('2', 500));
 			// // std::cout << "----> end node: " << my_m.__TreeRoot.end_node << std::endl;
