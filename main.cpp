@@ -6,7 +6,7 @@
 /*   By: hboudhir <hboudhir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/08 14:54:59 by hboudhir          #+#    #+#             */
-/*   Updated: 2022/03/14 17:41:47 by hboudhir         ###   ########.fr       */
+/*   Updated: 2022/03/16 10:51:24 by hboudhir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,10 +77,10 @@ int main( void )
 			ft::map<int, int>::iterator	it;
 
 			// insert some values:
-			mapT.insert(ft::make_pair(1, 10));
-			mapT.insert(ft::make_pair(2, 20));
-			mapT.insert(ft::make_pair(3, 30));
-			mapT.insert(ft::make_pair(4, 30));
+			// mapT.insert(ft::make_pair(1, 10));
+			// mapT.insert(ft::make_pair(2, 20));
+			// mapT.insert(ft::make_pair(3, 30));
+			// mapT.insert(ft::make_pair(4, 30));
 			// mapT.insert(ft::make_pair(5, 30));
 			// mapT.insert(ft::make_pair(6, 30));
 
@@ -91,13 +91,15 @@ int main( void )
 			// m['e'] = 50;
 			// m['f'] = 60;
 
-			// for(int i = 0; i < 5; i++)
-			// 	mapT.insert(ft::make_pair('0' + i, i * 10));
+			for(int i = 0; i < 10; i++)
+				mapT.insert(ft::make_pair(i * 10, i * 10));
+			mapT.__TreeRoot.printBT();
+			LOG(((mapT.lower_bound(20))->first));
 			// it = mapT.find('b');
 			// mapT.erase(it);
-			// mapT.__TreeRoot.printBT();
-			mapT.erase(mapT.begin(), mapT.end());
-			mapT.erase(mapT.begin(), mapT.end());
+			// // mapT.__TreeRoot.printBT();
+			// mapT.erase(mapT.begin(), mapT.end());
+			// mapT.erase(mapT.begin(), mapT.end());
 			// mapT.__TreeRoot.printBT();
 			// mapT.erase(mapT.begin(), mapT.end());
 			// mapT.__TreeRoot.printBT();
@@ -191,17 +193,27 @@ int main( void )
 	// }
 	LOG("============================== STD::VECTOR  ==============================\n\n");
 	{
-			std::map<char, int>				mapT;
-			// std::map<char, int>::iterator	it;
-        	std::pair<std::map<char, int>::iterator, bool> std_ret;
-			
+			std::map<int, int>				mapT;
+			std::map<int, int>::iterator	it;
 
-			for(int i = 0; i < 5; i++)
-				mapT.insert(std::make_pair('0' + i, i * 10));
+			// insert some values:
+			// mapT.insert(std::make_pair(1, 10));
+			// mapT.insert(std::make_pair(2, 20));
+			// mapT.insert(std::make_pair(3, 30));
+			// mapT.insert(std::make_pair(4, 30));
+			// mapT.insert(std::make_pair(5, 30));
+			// mapT.insert(std::make_pair(6, 30));
 
-			std_ret = mapT.insert(std::pair<char, int>('2', 500));
-			LOG(std_ret.second);
+			// m['a'] = 10;
+			// m['b'] = 20;
+			// m['c'] = 30;
+			// m['d'] = 40;
+			// m['e'] = 50;
+			// m['f'] = 60;
 
+			for(int i = 0; i < 10; i++)
+				mapT.insert(std::make_pair(i * 10, i * 10));
+			LOG(((mapT.lower_bound(20))->first));
 
 
 

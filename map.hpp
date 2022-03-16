@@ -7,25 +7,28 @@
 #include "reverse_iterator.hpp"
 #include "vector.hpp"
 #include <unistd.h>
+#include "iterator_traits.hpp"
 namespace ft
 {
+
 
 	template<class Key, class T, class Compare = std::less<Key>, class Alloc = std::allocator<ft::pair<const Key, T> >
 	> class map
 	{
 		public:
 			//* Types.
-			typedef	Key														key_type;
-			typedef	T														mapped_type;
-			typedef ft::pair<const key_type, mapped_type>					value_type;
-			typedef Compare													key_compare;
-			typedef	Alloc													allocator_type;
-			typedef typename allocator_type::reference&						reference;
-			typedef typename allocator_type::const_reference&				const_reference;
+			typedef	Key																				key_type;
+			typedef	T																				mapped_type;
+			typedef ft::pair<const key_type, mapped_type>											value_type;
+			typedef Compare																			key_compare;
+			typedef typename Alloc::template rebind<AvlBST<value_type, key_compare, Alloc> >::other __AllocAVL;
+			typedef	Alloc																			allocator_type;
+			typedef typename allocator_type::reference&												reference;
+			typedef typename allocator_type::const_reference&										const_reference;
 
 
-			typedef typename allocator_type::pointer						pointer;
-			typedef typename allocator_type::const_pointer					const_pointer;
+			typedef typename allocator_type::pointer												pointer;
+			typedef typename allocator_type::const_pointer											const_pointer;
 			
 			//* Iterators.
 			typedef	mapIterator<AvlBST<value_type, key_compare, Alloc> >							iterator;
@@ -35,7 +38,21 @@ namespace ft
 			typedef std::ptrdiff_t																	difference_type;
 			typedef std::size_t																		size_type;
 
-
+		class value_compare
+		{   // in C++98, it is required to inherit binary_function<value_type,value_type,bool>
+			friend class map;
+			protected:
+			Compare comp;
+			value_compare (Compare c) : comp(c) {}  // constructed with map's comparison object
+			public:
+			typedef bool result_type;
+			typedef value_type first_argument_type;
+			typedef value_type second_argument_type;
+			bool operator() (const value_type& x, const value_type& y) const
+			{
+				return comp(x.first, y.first);
+			}
+		};
 
 
 
@@ -217,10 +234,10 @@ namespace ft
 			return key_compare(__cmp);
 		}
 		//? What the heck is this function doing. V
-		// value_compare	value_comp() const
-		// {
-			
-		// }
+		value_compare	value_comp() const
+		{
+			return value_compare(key_comp());
+		}
 		//! The iterator erase method won't work. (segfaults must implement the vector way)
 		void erase (iterator first, iterator last)
 		{
@@ -300,6 +317,137 @@ namespace ft
 			else
 				return end();
 		}
+		const_iterator	find(const key_type& k) const
+		{
+			if (__TreeRoot.__root != NULL)
+			{
+				try
+				{
+					return(const_iterator(&__TreeRoot, __TreeRoot.search_unique(k, __TreeRoot.__root)));
+				}
+				catch(const char *e)
+				{
+					return end();
+				}
+				
+			}
+			else
+				return end();
+		}
+
+		size_type	count(const key_type& k) const
+		{
+			if (find(k) == end())
+				return 0;
+			else
+				return 1;
+		}
+
+		iterator	lower_bound (const key_type& k)
+		{
+			typename AvlBST<value_type, key_compare, Alloc>::Node*	lowest = __TreeRoot.__root;
+			iterator												result;
+			while (lowest)
+			{
+				if (!__cmp(lowest->key.first, k))
+				{
+					result = iterator(&__TreeRoot, lowest);
+					lowest = lowest->left;
+				}
+				else
+					lowest = lowest->right;
+				// if (k == lowest->key.first)
+				// 	return (iterator(&__TreeRoot, lowest));
+				// else if (__cmp(lowest->key.first, k) == false) //*  key.first < k
+				// {
+				// 	return (iterator(&__TreeRoot, lowest));
+				// 	lowest = lowest->left;
+				// }
+				// else if (__cmp(lowest->key.first, k) == true) //* key.first < k
+				// {
+				// 	lowest = lowest->right;
+				// }
+			}
+				return iterator(result);
+			// return (this->end());
+		}
+		const_iterator	lower_bound (const key_type& k) const
+		{
+			typename AvlBST<value_type, key_compare, Alloc>::Node*	lowest = __TreeRoot.__root;
+			const_iterator												result;
+			while (lowest)
+			{
+				if (!__cmp(lowest->key.first, k))
+				{
+					result = const_iterator(&__TreeRoot, lowest);
+					lowest = lowest->left;
+				}
+				else
+					lowest = lowest->right;
+				// if (k == lowest->key.first)
+				// 	return (iterator(&__TreeRoot, lowest));
+				// else if (__cmp(lowest->key.first, k) == false) //*  key.first < k
+				// {
+				// 	return (iterator(&__TreeRoot, lowest));
+				// 	lowest = lowest->left;
+				// }
+				// else if (__cmp(lowest->key.first, k) == true) //* key.first < k
+				// {
+				// 	lowest = lowest->right;
+				// }
+			}
+				return const_iterator(result);
+			// return (this->end());
+		}
+
+		iterator	upper_bound(const key_type& k)
+		{
+			typename AvlBST<value_type, key_compare, Alloc>::Node*	upper = __TreeRoot.__root;
+			iterator												result;
+
+			while (upper)
+			{
+				if (__cmp(k, upper->key.first))
+				{
+					result = iterator(&__TreeRoot, upper);
+					upper = upper->left; 
+				}
+				else
+					upper = upper->right;
+			}
+			return iterator(result);
+		}
+		const_iterator	upper_bound(const key_type& k) const
+		{
+			typename AvlBST<value_type, key_compare, Alloc>::Node*	upper = __TreeRoot.__root;
+			const_iterator												result;
+
+			while (upper)
+			{
+				if (__cmp(k, upper->key.first))
+				{
+					result = const_iterator(&__TreeRoot, upper);
+					upper = upper->left; 
+				}
+				else
+					upper = upper->right;
+			}
+			return const_iterator(result);
+		}
+		ft::pair<iterator, iterator>	equal_range(const key_type& k)
+		{
+			return (ft::make_pair(this->lower_bound(k), this->upper_bound(k)));
+		}
+
+		ft::pair<const_iterator, const_iterator>	equal_range(const key_type& k) const
+		{
+			return (ft::make_pair(this->lower_bound(k), this->upper_bound(k)));
+		}
+
+		allocator_type get_allocator() const
+		{
+			return allocator_type();
+		};
 		// iterator	find(const key_type& k)
 		// {
 		// 	typename AvlBST<value_type, key_compare, Alloc>::Node*	temp;
@@ -310,19 +458,66 @@ namespace ft
 			
 		// 		return iterator(AvlBST<value_type, key_compare, Alloc>());
 		// }
-		allocator_type get_allocator() const
-		{
-			return allocator_type();
-		};
+
+
+
+	// 	template <class Key_, class T_, class Compare_, class Alloc_>
+	// friend bool operator== ( const map<Key_,T_,Compare_,Alloc_>& lhs, const map<Key_,T_,Compare_,Alloc_>& rhs ){
+	// 	if (lhs.size() == rhs.size() && ft::equal(lhs.begin(), lhs.end(), rhs.begin()))
+	// 		return (true);
+	// 	return (false);
+	// }
+
+
+
 		//! Currently they're public for testing only.
 		//TODO: return it private after finishing tests.
 		public:
+			__AllocAVL										__allocAVL;
 			size_t											__Size;
-			AvlBST<value_type, key_compare, Alloc>					__TreeRoot;
+			AvlBST<value_type, key_compare, Alloc>			__TreeRoot;
 			// size_t			__Capacity; //<==== Not sure if there's a Capacity counter since it's a BST.
 			allocator_type									__Alloc;
 			key_compare										__cmp;
 
 	};
+	template< class Key, class T, class Compare, class Alloc >
+	bool operator==( const ft::map<Key,T,Compare,Alloc>& lhs, const ft::map<Key,T,Compare,Alloc>& rhs )
+	{
+		return (lhs.size() == rhs.size() && ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
+		// if (lhs.size() == rhs.size() && ft::equal(lhs.begin(), lhs.end(), rhs.begin()))
+		// 	return (true);
+		// return (false);
+	};
 	
+	template< class Key, class T, class Compare, class Alloc >
+	bool operator!=( const ft::map<Key,T,Compare,Alloc>& lhs, const ft::map<Key,T,Compare,Alloc>& rhs )
+	{
+		return !(lhs == rhs);
+	};
+	template< class Key, class T, class Compare, class Alloc >
+	bool operator< (const ft::map<Key,T,Compare,Alloc>& lhs, const ft::map<Key,T,Compare,Alloc>& rhs )
+	{
+		return	ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+	};
+	template< class Key, class T, class Compare, class Alloc >
+	bool operator> (const ft::map<Key,T,Compare,Alloc>& lhs, const ft::map<Key,T,Compare,Alloc>& rhs )
+	{
+		return	rhs < lhs;
+	};
+	template< class Key, class T, class Compare, class Alloc >
+	bool operator<= (const ft::map<Key,T,Compare,Alloc>& lhs, const ft::map<Key,T,Compare,Alloc>& rhs )
+	{
+		return	!(rhs < lhs);
+	};
+	template< class Key, class T, class Compare, class Alloc >
+	bool operator>= (const ft::map<Key,T,Compare,Alloc>& lhs, const ft::map<Key,T,Compare,Alloc>& rhs )
+	{
+		return	!(lhs < rhs);
+	};
+	template <class Key, class T, class Compare, class Alloc>
+  	void swap (map<Key,T,Compare,Alloc>& x, map<Key,T,Compare,Alloc>& y)
+	{
+		x.swap(y);
+	};
 };

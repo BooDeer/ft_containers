@@ -970,6 +970,33 @@ class AvlBST
 			}
 		}
 
+		Node*	search_unique(const first_type& k, Node* root) const
+		{
+			try
+			{
+				if (root && k == root->key.first)
+				{
+					Node* tmp;
+
+					tmp = root;
+					return tmp;
+				}
+				if (root && k < root->key.first)
+				{
+					return (search_unique(k, root->left));
+				}
+				else if (root && k > root->key.first)
+				{
+					return (search_unique(k, root->right));
+				}
+				throw "Error";
+			}
+			catch (const char *s)
+			{
+				throw s;
+			}
+		}
+
 	//! Insertion methods.
 	public:
 		//* Default constructor.

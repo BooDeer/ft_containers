@@ -212,11 +212,20 @@ void printBT(const Node* node)
 // pass the root node of your binary tree
 
 int main() {
-	Node*	__root = NULL;
-	for(int i = 1; i < 10; i++)
-		__root = insertNode(__root, i * 10);
-	printBT(__root);
-	__root = deleteNode(__root, 60);
-	printBT(__root);
+
+
+
+
+	char c[3] = {};
+	c[0] = 'i';
+	c[1] = 't';
+	// c[2] = 0;
+	std::cout << c << std::endl;
+	// Node*	__root = NULL;
+	// for(int i = 1; i < 10; i++)
+	// 	__root = insertNode(__root, i * 10);
+	// printBT(__root);
+	// __root = deleteNode(__root, 60);
+	// printBT(__root);
 
 }
