@@ -62,22 +62,31 @@ namespace ft
 		//* Default constructor.
 		explicit map (const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()): __Size(0), __Alloc(alloc), __cmp(comp) {
 			// LOG("[map] Default constructor.");
+			__TreeRoot =  __allocAVL.allocate(1);
+			__allocAVL.construct(__TreeRoot,AvlBST<value_type, key_compare, Alloc>());
 		};
 		//* Copy constructor.
-		map (const map& src): __Size(src.__Size), __cmp(src.__cmp), __TreeRoot(src.__TreeRoot)
+		map (const map& src): __Size(src.__Size), __cmp(src.__cmp)
 		{
 			//TODO: implement copy constructor.
-
+			__TreeRoot =  __allocAVL.allocate(1);
+			__allocAVL.construct(__TreeRoot,AvlBST<value_type, key_compare, Alloc>());
+			*this = src;
 		}
 		//* Range constructor.
 		template <class InputIterator>
   		map (InputIterator first, InputIterator last, const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()): __Size(0), __cmp(comp), __Alloc(alloc)
 		{
+			__TreeRoot =  __allocAVL.allocate(1);
+			__allocAVL.construct(__TreeRoot,AvlBST<value_type, key_compare, Alloc>());
 			insert(first, last);
 		};
 		map& operator= (const map& x)
 		{
-			__TreeRoot	= x.__TreeRoot;
+			//TODO: deep copy __TreeRoot and others.
+			// __TreeRoot	= x.__TreeRoot;
+			this->__Alloc = x.__Alloc;
+			__TreeRoot->__root = __TreeRoot->copy_helper(x.__TreeRoot->__root, NULL);
 			__Size		= x.__Size;
 			return *this;
 		};
@@ -94,7 +103,7 @@ namespace ft
 
 			bool		empty() const
 			{
-				return (__TreeRoot.__root) ? false : true;
+				return (__TreeRoot->__root) ? false : true;
 			}
 
 			size_type	max_size() const	//! Incorrect.
@@ -110,7 +119,7 @@ namespace ft
 
 
 				ft::pair<typename AvlBST<value_type, key_compare, Alloc>::Node*, bool> ret;
-				ret = __TreeRoot.insertNode(val);
+				ret = __TreeRoot->insertNode(val);
 				// LOG("---> " << ret.first->key.first << ": " << ret.second);
 				if (ret.second)
 					__Size++;
@@ -155,19 +164,19 @@ namespace ft
 			{
 				typename AvlBST<value_type, key_compare, Alloc>::Node*	temp;
 				if (!__Size)
-					temp = __TreeRoot.end();
+					temp = __TreeRoot->end();
 				else
-					temp = __TreeRoot.begin();
-				return iterator(&__TreeRoot, temp);
+					temp = __TreeRoot->begin();
+				return iterator(__TreeRoot, temp);
 			}
 			const_iterator	begin() const
 			{
 				typename AvlBST<value_type, key_compare, Alloc>::Node*	temp;
 				if (!__Size)
-					temp = __TreeRoot.end();
+					temp = __TreeRoot->end();
 				else
-					temp = __TreeRoot.begin();
-				return const_iterator(&__TreeRoot, temp);
+					temp = __TreeRoot->begin();
+				return const_iterator(__TreeRoot, temp);
 			}
 			reverse_iterator	rbegin()
 			{
@@ -181,13 +190,13 @@ namespace ft
 
 			iterator	end()
 			{
-				typename AvlBST<value_type, key_compare, Alloc>::Node*	temp = __TreeRoot.end();
-				return iterator(&__TreeRoot, temp);
+				typename AvlBST<value_type, key_compare, Alloc>::Node*	temp = __TreeRoot->end();
+				return iterator(__TreeRoot, temp);
 			}
 			const_iterator	end() const
 			{
-				typename AvlBST<value_type, key_compare, Alloc>::Node*	temp = __TreeRoot.end();
-				return const_iterator(&__TreeRoot, temp);
+				typename AvlBST<value_type, key_compare, Alloc>::Node*	temp = __TreeRoot->end();
+				return const_iterator(__TreeRoot, temp);
 			}
 
 			reverse_iterator	rend()
@@ -202,7 +211,7 @@ namespace ft
 		void			clear()
 		{
 			while (__Size > 0)
-				this->erase(__TreeRoot.__root->key.first);
+				this->erase(__TreeRoot->__root->key.first);
 		}
 
 		mapped_type&	operator[] (const key_type& k)
@@ -213,12 +222,12 @@ namespace ft
 			// return (temp.second);
 			try
 			{
-				return (__TreeRoot.search(k, __TreeRoot.__root));
+				return (__TreeRoot->search(k, __TreeRoot->__root));
 			}
 			catch(...)
 			{
 				insert(ft::make_pair(k, mapped_type()));
-				return (__TreeRoot.search(k, __TreeRoot.__root));
+				return (__TreeRoot->search(k, __TreeRoot->__root));
 				// std::cerr << e.what() << '\n';
 			}
 			
@@ -250,7 +259,7 @@ namespace ft
 			}
 			for(size_t i = 0; i < temp.size(); i++)
 			{
-				__TreeRoot.deleteNode((temp[i]));
+				__TreeRoot->deleteNode((temp[i]));
 				__Size--;	
 			}
 		};
@@ -274,18 +283,18 @@ namespace ft
 		void		erase(iterator position)
 		{
 			//TODO: (ΦзΦ). . . fuck this.
-			if (__TreeRoot.searchNode(__TreeRoot.__root, (*position).first))
+			if (__TreeRoot->searchNode(__TreeRoot->__root, (*position).first))
 			{
 				__Size--;
-				__TreeRoot.deleteNode((*position).first);
+				__TreeRoot->deleteNode((*position).first);
 			}
 		}
 		size_type	erase (const key_type& k)
 		{
 			int ret = 0;
-			if (__TreeRoot.searchNode(__TreeRoot.__root, k))
+			if (__TreeRoot->searchNode(__TreeRoot->__root, k))
 				ret = 1;
-			__TreeRoot.deleteNode(k);
+			__TreeRoot->deleteNode(k);
 			if (ret && __Size > 0)
 				__Size--;
 			return ret;
@@ -293,20 +302,23 @@ namespace ft
 
 		void	swap(map& x)
 		{
-			map	temp;
-
-			temp	= x;
-			x 		= *this;
-			x		= temp;
+			AvlBST<value_type, key_compare, Alloc>			*tempTree	= this->__TreeRoot;
+			size_t											tempSize	= this->__Size;
+			//std::cout << "size == " << __Size << "    size. ==> " << x.__Size << std::endl;
+			this->__TreeRoot	= x.__TreeRoot;
+			this->__Size		= x.__Size;
+			x.__TreeRoot		= tempTree;
+			x.__Size			= tempSize;
+			//std::cout << "size == " << __Size << "    size. ==> " << x.__Size << std::endl;
 		}
 
 		iterator	find(const key_type& k)
 		{
-			if (__TreeRoot.__root != NULL)
+			if (__TreeRoot->__root != NULL)
 			{
 				try
 				{
-					return(iterator(&__TreeRoot, __TreeRoot.search_unique(k, __TreeRoot.__root)));
+					return(iterator(__TreeRoot, __TreeRoot->search_unique(k, __TreeRoot->__root)));
 				}
 				catch(const char *e)
 				{
@@ -319,11 +331,11 @@ namespace ft
 		}
 		const_iterator	find(const key_type& k) const
 		{
-			if (__TreeRoot.__root != NULL)
+			if (__TreeRoot->__root != NULL)
 			{
 				try
 				{
-					return(const_iterator(&__TreeRoot, __TreeRoot.search_unique(k, __TreeRoot.__root)));
+					return(const_iterator(__TreeRoot, __TreeRoot->search_unique(k, __TreeRoot->__root)));
 				}
 				catch(const char *e)
 				{
@@ -345,13 +357,13 @@ namespace ft
 
 		iterator	lower_bound (const key_type& k)
 		{
-			typename AvlBST<value_type, key_compare, Alloc>::Node*	lowest = __TreeRoot.__root;
+			typename AvlBST<value_type, key_compare, Alloc>::Node*	lowest = __TreeRoot->__root;
 			iterator												result;
 			while (lowest)
 			{
 				if (!__cmp(lowest->key.first, k))
 				{
-					result = iterator(&__TreeRoot, lowest);
+					result = iterator(__TreeRoot, lowest);
 					lowest = lowest->left;
 				}
 				else
@@ -373,13 +385,13 @@ namespace ft
 		}
 		const_iterator	lower_bound (const key_type& k) const
 		{
-			typename AvlBST<value_type, key_compare, Alloc>::Node*	lowest = __TreeRoot.__root;
+			typename AvlBST<value_type, key_compare, Alloc>::Node*	lowest = __TreeRoot->__root;
 			const_iterator												result;
 			while (lowest)
 			{
 				if (!__cmp(lowest->key.first, k))
 				{
-					result = const_iterator(&__TreeRoot, lowest);
+					result = const_iterator(__TreeRoot, lowest);
 					lowest = lowest->left;
 				}
 				else
@@ -402,14 +414,14 @@ namespace ft
 
 		iterator	upper_bound(const key_type& k)
 		{
-			typename AvlBST<value_type, key_compare, Alloc>::Node*	upper = __TreeRoot.__root;
+			typename AvlBST<value_type, key_compare, Alloc>::Node*	upper = __TreeRoot->__root;
 			iterator												result;
 
 			while (upper)
 			{
 				if (__cmp(k, upper->key.first))
 				{
-					result = iterator(&__TreeRoot, upper);
+					result = iterator(__TreeRoot, upper);
 					upper = upper->left; 
 				}
 				else
@@ -419,14 +431,14 @@ namespace ft
 		}
 		const_iterator	upper_bound(const key_type& k) const
 		{
-			typename AvlBST<value_type, key_compare, Alloc>::Node*	upper = __TreeRoot.__root;
+			typename AvlBST<value_type, key_compare, Alloc>::Node*	upper = __TreeRoot->__root;
 			const_iterator												result;
 
 			while (upper)
 			{
 				if (__cmp(k, upper->key.first))
 				{
-					result = const_iterator(&__TreeRoot, upper);
+					result = const_iterator(__TreeRoot, upper);
 					upper = upper->left; 
 				}
 				else
@@ -475,7 +487,7 @@ namespace ft
 		public:
 			__AllocAVL										__allocAVL;
 			size_t											__Size;
-			AvlBST<value_type, key_compare, Alloc>			__TreeRoot;
+			AvlBST<value_type, key_compare, Alloc>			*__TreeRoot;
 			// size_t			__Capacity; //<==== Not sure if there's a Capacity counter since it's a BST.
 			allocator_type									__Alloc;
 			key_compare										__cmp;

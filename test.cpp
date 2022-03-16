@@ -2,6 +2,22 @@
 
 #include <iostream>
 using namespace std;
+namespace ft
+{
+
+};
+
+// #define nmspace 0
+#if(nmspace == 1)  //CREATE A REAL STL EXAMPLE
+	#include <map>
+	#include <stack>
+	#include <vector>
+	namespace std = ft;
+#else
+	#include <map.hpp>
+	#include <stack.hpp>
+	#include <vector.hpp>
+#endif
 
 class Node {
    public:

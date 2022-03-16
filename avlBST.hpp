@@ -2,7 +2,7 @@
 
 #include <iostream>
 #include "utility.hpp"
-template <class __T, class __Compare = std::less<__T>, class Allocator = std::allocator<__T> >
+template <class __T, class __Compare, class Allocator = std::allocator<__T> >
 class AvlBST
 {
 	public: 
@@ -160,9 +160,9 @@ class AvlBST
 		{
 			if (key.first == current->key.first)
 				return current;
-			else if (key.first < current->key.first)
+			else if (__cmp(key.first, current->key.first))
 				current = current->left;
-			else if (key.first > current->key.first)
+			else if (__cmp(current->key.first, key.first))
 				current = current->right;
 		}
 
@@ -176,9 +176,9 @@ class AvlBST
 		{
 			if (key == current->key.first)
 				return current;
-			else if (key < current->key.first)
+			else if (__cmp(key, current->key.first))
 				current = current->left;
-			else if (key > current->key.first)
+			else if (__cmp(current->key.first, key))
 				current = current->right;
 		}
 
@@ -269,7 +269,7 @@ class AvlBST
 		root->par = tmpnode;
 
 		if (tmpnode->par != NULL
-			&& root->key.first < tmpnode->par->key.first) {
+			&& __cmp(root->key.first, tmpnode->par->key.first)) {
 			tmpnode->par->left = tmpnode;
 		}
 		else {
@@ -300,7 +300,7 @@ class AvlBST
 		root->par = tmpnode;
 	
 		if (tmpnode->par != NULL
-			&& root->key < tmpnode->par->key) {
+			&& __cmp(root->key.first, tmpnode->par->key.first)) {
 			tmpnode->par->left = tmpnode;
 		}
 		else {
@@ -395,7 +395,7 @@ class AvlBST
 		}
 		else if (root->key.first == key.first)
 			return(ft::make_pair(root, false));
-		else if (root->key.first > key.first) {
+		else if (__cmp(key.first, root->key.first)) {
 			pair_ret = insertNode(root->left,	root, key);
 			int firstheight = 0;
 			int secondheight = 0;
@@ -407,7 +407,7 @@ class AvlBST
 				secondheight = root->right->height;
 			if (abs(firstheight- secondheight)== 2) {
 	
-				if (root->left != NULL && key.first < root->left->key.first) {
+				if (root->left != NULL && __cmp(key.first, root->left->key.first)) {
 					root = LLR(root);
 				}
 				else {
@@ -416,7 +416,7 @@ class AvlBST
 			}
 		}
 	
-		else if (root->key < key) {
+		else if (__cmp(root->key.first, key.first)) {
 			pair_ret = insertNode(root->right, root, key);
 			int firstheight = 0;
 			int secondheight = 0;
@@ -428,7 +428,7 @@ class AvlBST
 			if (root->right != NULL)
 				secondheight = root->right->height;
 			if (abs(firstheight - secondheight) == 2) {
-				if (root->right != NULL	&& key.first < root->right->key.first) {
+				if (root->right != NULL	&& __cmp(key.first, root->right->key.first)) {
 					root = RLR(root);
 				}
 				else {
@@ -931,9 +931,9 @@ class AvlBST
 			{
 				if (root && k == root->key.first)
 					return root->key.second;
-				if (root && k < root->key.first)
+				if (root && __cmp(k, root->key.first))
 					return search(k, root->left);
-				else if (root && k > root->key.first)
+				else if (root && __cmp(root->key.first, k))
 					return search(k, root->right);
 				throw "Not found";
 			}
@@ -954,11 +954,11 @@ class AvlBST
 					tmp = root;
 					return tmp;
 				}
-				if (root && k < root->key.first)
+				if (root && __cmp(k, root->key.first))
 				{
 					return (search_unique(k, root->left));
 				}
-				else if (root && k > root->key.first)
+				else if (root && __cmp(root->key.first, k))
 				{
 					return (search_unique(k, root->right));
 				}
@@ -981,11 +981,11 @@ class AvlBST
 					tmp = root;
 					return tmp;
 				}
-				if (root && k < root->key.first)
+				if (root && __cmp(k, root->key.first))
 				{
 					return (search_unique(k, root->left));
 				}
-				else if (root && k > root->key.first)
+				else if (root && __cmp(root->key.first, k))
 				{
 					return (search_unique(k, root->right));
 				}
