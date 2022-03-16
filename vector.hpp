@@ -57,7 +57,7 @@ namespace ft{
 			{
 				// this->assign(n, val);
 				__Vec = __Alloc.allocate(n);
-				for(int i = 0; i < n; i++)
+				for(size_t i = 0; i < n; i++)
 					__Alloc.construct(__Vec + i, val);
 			};
 
@@ -100,12 +100,12 @@ namespace ft{
 			{
 				if (__Size > 0)
 				{
-					for (int i = 0; i < __Size; i++)
+					for (size_t i = 0; i < __Size; i++)
 						__Alloc.destroy(__Vec + i);
 					__Alloc.deallocate(__Vec, __Capacity);
 				}
 				__Vec = __Alloc.allocate(rhs.__Capacity);
-				for(int i = 0; i < rhs.__Size; i++)
+				for(size_t i = 0; i < rhs.__Size; i++)
 					__Alloc.construct(__Vec + i, rhs.__Vec[i]);
 				__Size = rhs.__Size;
 				__Capacity = rhs.__Capacity;
@@ -116,7 +116,7 @@ namespace ft{
 				//TODO: implement the fucking destructor.
 				if (__Vec != nullptr)
 				{
-					for (int i = 0; i < __Size; i++)
+					for (size_t i = 0; i < __Size; i++)
 						__Alloc.destroy(__Vec + i);
 					__Alloc.deallocate(__Vec, __Capacity);
 				}
@@ -170,7 +170,7 @@ namespace ft{
 			{
 				if (n < __Size)
 				{
-					for (int i = n; i < __Size; i++)
+					for (size_t i = n; i < __Size; i++)
 						__Alloc.destroy(__Vec + i);
 					__Size = n;
 					return ;
@@ -178,7 +178,7 @@ namespace ft{
 				else if (n > __Size)
 				{
 					this->reserve(n);
-					for (int i = __Size; i < n; i++)
+					for (size_t i = __Size; i < n; i++)
 						__Alloc.construct(__Vec + i, val);
 					__Size = n;
 				}
@@ -193,7 +193,7 @@ namespace ft{
 					pointer newVec;
 					__Capacity = n; //? Reserve takes directly the n size. (doesn't multiply the old capacity by 2)
 					newVec = __Alloc.allocate(__Capacity);
-					for(int i = 0; i < __Size; i++)
+					for(size_t i = 0; i < __Size; i++)
 					{
 						__Alloc.construct(newVec + i, *(__Vec + i));
 						__Alloc.destroy(__Vec + i);
@@ -256,7 +256,7 @@ namespace ft{
 		public:
 			void			clear()
 			{
-				for (int i = 0; i < __Size; i++)
+				for (size_t i = 0; i < __Size; i++)
 				{
 					__Alloc.destroy(__Vec + i);
 				}
@@ -290,7 +290,7 @@ namespace ft{
 
 				__Size--;
 				__Alloc.destroy(__Vec + distance);
-				for(int i = distance; i < __Size; i++)
+				for(size_t i = distance; i < __Size; i++)
 					__Alloc.construct(__Vec + i, __Vec[i + 1]); //?? __Vec[i] = __Vec[i + 1];
 				// __Alloc.destroy(__Vec + __Size +);
 				return (iterator(__Vec + distance));
@@ -303,9 +303,9 @@ namespace ft{
 				index = std::distance(begin(), first);
 				distance = std::distance(first, last);
 				__Size -= distance;
-				for (int i = index; i < distance; i++)
+				for (ptrdiff_t i = index; i < distance; i++)
 					__Alloc.destroy(__Vec + i);
-				for (int i = index; i < __Size; i++)
+				for (size_t i = index; i < __Size; i++)
 					__Alloc.construct(__Vec + i, __Vec[i + distance]);
 				return (iterator(__Vec + index));
 			};
@@ -343,7 +343,7 @@ namespace ft{
 			}
 				for (int i = __Size - 1; i >= distance; --i)
 					__Alloc.construct(__Vec +(i + n), __Vec[i]);
-				for(int i = 0; i < n; ++i)
+				for(size_t i = 0; i < n; ++i)
 					__Alloc.construct(__Vec + distance++, val);
 				__Size += n;
 			};
@@ -396,24 +396,67 @@ namespace ft{
 							typename std::enable_if<!std::is_integral<InputIterator>::value, InputIterator>::type* = nullptr)
 			{
 				std::ptrdiff_t distance = std::distance(first, last);
-				if (distance > __Capacity)
+				if (distance != 0)
 				{
-					__Capacity *= 2;
-					if (!__Capacity)
-						__Capacity = distance;
-					__Alloc.deallocate(__Vec, __Capacity);
-					__Vec = __Alloc.allocate(__Capacity);
-				}
-
-				for (int i = 0; i < distance; i++)
-				{
-					if (i < __Size)
+					for(size_t i = 0; i < __Size; i++)
 						__Alloc.destroy(__Vec + i);
-					__Alloc.construct(__Vec + i, first[i]);
+					__Alloc.deallocate(__Vec, __Capacity);
+					__Size = distance;
+					if ((size_t)distance > __Capacity)
+						__Capacity = __Size;
+					pointer temp = __Alloc.allocate(__Capacity);
+					int i = 0;
+					for (; first != last; first++)
+					{
+						__Alloc.construct(temp + i, *first);
+						i++;
+					}
+					__Vec = temp;
 				}
-				__Size = distance;
+				else
+					__Size = 0;
+				// if ((size_t)distance > __Capacity)
+				// {
+				// 	__Capacity *= 2;
+				// 	if (!__Capacity)
+				// 		__Capacity = distance;
+				// 	__Alloc.deallocate(__Vec, __Capacity);
+				// 	__Vec = __Alloc.allocate(__Capacity);
+				// }
+
+				// for (difference_type i = 0; i < distance; i++)
+				// {
+				// 	if ((size_t)i < __Size)
+				// 		__Alloc.destroy(__Vec + i);
+				// 	__Alloc.construct(__Vec + i, first[i]);
+				// }
+				// __Size = distance;
 			};
-			
+	// 			template <class InputIterator>
+  	// void assign (InputIterator first, InputIterator last, typename ft::enable_if<!is_integral<InputIterator>::value, InputIterator>::type = InputIterator()) //range
+	// {
+	// 	difference_type ds = std::distance(first, last);
+	// 	if (ds != 0)
+	// 	{
+	// 		// destory and dealocate dy_arr
+	// 		for(int i = 0; i < _size; i++)
+	// 			alloc.destroy(dy_arr + i);
+	// 		alloc.deallocate(dy_arr, _capacity);
+	// 		_size = ds;
+	// 		if (ds > _capacity)
+	// 			_capacity = _size;
+	// 		pointer tmp = alloc.allocate(_capacity);
+	// 		int  i = 0;
+	// 		for(; first != last; first++)
+	// 		{
+	// 			alloc.construct(tmp + i, *first);
+	// 			i++;
+	// 		}
+	// 		dy_arr =  tmp;
+	// 	}
+	// 	else 
+	// 		_size = 0;
+	// }
 			//* Assigns new contents to the vector, replacing its current contents, and modifying its size accordingly.
 			void			assign(size_type n, const value_type &val)
 			{
@@ -430,7 +473,7 @@ namespace ft{
 				}
 
 				//* Filling the vector with the new values.
-				for (int i = 0; i < n; i++)
+				for (size_t i = 0; i < n; i++)
 				{
 					if (i < __Size)
 						__Alloc.destroy(__Vec + i);

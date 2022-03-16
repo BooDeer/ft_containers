@@ -21,10 +21,10 @@ namespace ft
 			typedef	T																				mapped_type;
 			typedef ft::pair<const key_type, mapped_type>											value_type;
 			typedef Compare																			key_compare;
-			typedef typename Alloc::template rebind<AvlBST<value_type, key_compare, Alloc> >::other __AllocAVL;
 			typedef	Alloc																			allocator_type;
 			typedef typename allocator_type::reference&												reference;
 			typedef typename allocator_type::const_reference&										const_reference;
+			typedef typename Alloc::template rebind<AvlBST<value_type, key_compare, Alloc> >::other __AllocAVL;
 
 
 			typedef typename allocator_type::pointer												pointer;
@@ -61,7 +61,6 @@ namespace ft
 		//! The canonical form =====================================================================
 		//* Default constructor.
 		explicit map (const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()): __Size(0), __Alloc(alloc), __cmp(comp) {
-			// LOG("[map] Default constructor.");
 			__TreeRoot =  __allocAVL.allocate(1);
 			__allocAVL.construct(__TreeRoot,AvlBST<value_type, key_compare, Alloc>());
 		};
@@ -75,7 +74,7 @@ namespace ft
 		}
 		//* Range constructor.
 		template <class InputIterator>
-  		map (InputIterator first, InputIterator last, const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()): __Size(0), __cmp(comp), __Alloc(alloc)
+  		map (InputIterator first, InputIterator last, const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()): __Size(0), __Alloc(alloc), __cmp(comp)
 		{
 			__TreeRoot =  __allocAVL.allocate(1);
 			__allocAVL.construct(__TreeRoot,AvlBST<value_type, key_compare, Alloc>());
@@ -83,13 +82,18 @@ namespace ft
 		};
 		map& operator= (const map& x)
 		{
-			//TODO: deep copy __TreeRoot and others.
-			// __TreeRoot	= x.__TreeRoot;
 			this->__Alloc = x.__Alloc;
 			__TreeRoot->__root = __TreeRoot->copy_helper(x.__TreeRoot->__root, NULL);
 			__Size		= x.__Size;
 			return *this;
 		};
+
+		~map ( void )
+		{
+			this->clear();
+			__allocAVL.destroy(__TreeRoot);
+			__allocAVL.deallocate(__TreeRoot, 1);
+		}
 		//! The canonical form =====================================================================
 
 
@@ -106,48 +110,26 @@ namespace ft
 				return (__TreeRoot->__root) ? false : true;
 			}
 
-			size_type	max_size() const	//! Incorrect.
+			size_type	max_size() const
 			{
 				return __Alloc.max_size();
 			}
+
 			ft::pair<iterator, bool>	insert(const value_type& val)
-			// void	insert(const value_type& val)
 			{
-				// typename AvlBST<value_type, key_compare, Alloc>::Node*	temp;
-				// bool													ret;
-
-
-
 				ft::pair<typename AvlBST<value_type, key_compare, Alloc>::Node*, bool> ret;
 				ret = __TreeRoot->insertNode(val);
-				// LOG("---> " << ret.first->key.first << ": " << ret.second);
 				if (ret.second)
 					__Size++;
 				return ft::make_pair<iterator, bool>(this->find(val.first), ret.second);
-
-
-
-
-
-
-
-
-
-
-				// if ((temp = __TreeRoot.searchNode(__TreeRoot.__root, val)))
-				// 	return ft::make_pair<iterator, bool>(iterator(AvlBST<value_type, key_compare>(__TreeRoot.__root, temp)), false);
-				// LOG("--->" << __TreeRoot.insertNode(val).second);
-				// temp = __TreeRoot.searchNode(__TreeRoot.__root, val);
-				// __Size++;
-				// return ft::make_pair<iterator, bool>(iterator(AvlBST<value_type, key_compare>(__TreeRoot.__root, ret.first)), ret.second);
 			};
-			//! Am I retarded or that's how it should be done?
-			//* Yes I am indeed retarded, the hint is to help you reach faster the required node, if not found, then insert from the root.
+
 			iterator insert (iterator position, const value_type& val)
 			{
 				(void)position;
 				return	insert(val).first;
 			};
+
 			template <class InputIterator>
   			void insert (InputIterator first, InputIterator last)
 			{
@@ -186,7 +168,6 @@ namespace ft
 			{
 				return const_reverse_iterator(this->end());
 			}
-			//? Is this working? I don't feel like it should be working but I guess it does work?!
 
 			iterator	end()
 			{
@@ -216,10 +197,6 @@ namespace ft
 
 		mapped_type&	operator[] (const key_type& k)
 		{
-			// ft::pair<iterator, bool>	temp;
-			// typename AvlBST<value_type, key_compare, Alloc>::Node*	temp = __TreeRoot.search_unique()
-			// temp = this->insert(ft::make_pair<key_type, mapped_type>(k, mapped_type()));
-			// return (temp.second);
 			try
 			{
 				return (__TreeRoot->search(k, __TreeRoot->__root));
@@ -228,15 +205,7 @@ namespace ft
 			{
 				insert(ft::make_pair(k, mapped_type()));
 				return (__TreeRoot->search(k, __TreeRoot->__root));
-				// std::cerr << e.what() << '\n';
 			}
-			
-
-
-			// if ( (temp = __TreeRoot.searchNode(__TreeRoot.__root, ft::make_pair<key_type, mapped_type>(k, mapped_type()))))
-			// 	return temp->key.second;
-			// temp = __TreeRoot.insertNode(__TreeRoot.__root,NULL, ft::make_pair<key_type, mapped_type>(k, mapped_type())).first;
-			// return temp->key.second;
 		}
 		key_compare	key_comp() const
 		{
@@ -247,11 +216,10 @@ namespace ft
 		{
 			return value_compare(key_comp());
 		}
-		//! The iterator erase method won't work. (segfaults must implement the vector way)
+
 		void erase (iterator first, iterator last)
 		{
 			std::vector<key_type> temp;
-			int i = 0;
 			while (first != last)
 			{
 				temp.push_back(first->first);
@@ -263,32 +231,16 @@ namespace ft
 				__Size--;	
 			}
 		};
-			// void erase (iterator first, iterator last, int )
-			// {
-			// 	std::vector<key_type> temp;
-			// 	int i = 0;
-			// 	while (first != last)
-			// 	{
-			// 		temp.push_back(first->first);
-			// 		first++;
-			// 		std::cout << i++ << std::endl;
-			// 	}
-			// 	for(size_t i = 0; i < temp.size(); i++)
-			// 	{
-			// 		__TreeRoot.deleteNode((temp[i]));
-			// 		__Size--;
-			// 	}
-			// };
 
 		void		erase(iterator position)
 		{
-			//TODO: (ΦзΦ). . . fuck this.
 			if (__TreeRoot->searchNode(__TreeRoot->__root, (*position).first))
 			{
 				__Size--;
 				__TreeRoot->deleteNode((*position).first);
 			}
 		}
+
 		size_type	erase (const key_type& k)
 		{
 			int ret = 0;
@@ -304,12 +256,10 @@ namespace ft
 		{
 			AvlBST<value_type, key_compare, Alloc>			*tempTree	= this->__TreeRoot;
 			size_t											tempSize	= this->__Size;
-			//std::cout << "size == " << __Size << "    size. ==> " << x.__Size << std::endl;
 			this->__TreeRoot	= x.__TreeRoot;
 			this->__Size		= x.__Size;
 			x.__TreeRoot		= tempTree;
 			x.__Size			= tempSize;
-			//std::cout << "size == " << __Size << "    size. ==> " << x.__Size << std::endl;
 		}
 
 		iterator	find(const key_type& k)
@@ -368,20 +318,8 @@ namespace ft
 				}
 				else
 					lowest = lowest->right;
-				// if (k == lowest->key.first)
-				// 	return (iterator(&__TreeRoot, lowest));
-				// else if (__cmp(lowest->key.first, k) == false) //*  key.first < k
-				// {
-				// 	return (iterator(&__TreeRoot, lowest));
-				// 	lowest = lowest->left;
-				// }
-				// else if (__cmp(lowest->key.first, k) == true) //* key.first < k
-				// {
-				// 	lowest = lowest->right;
-				// }
 			}
-				return iterator(result);
-			// return (this->end());
+			return iterator(result);
 		}
 		const_iterator	lower_bound (const key_type& k) const
 		{
@@ -396,20 +334,8 @@ namespace ft
 				}
 				else
 					lowest = lowest->right;
-				// if (k == lowest->key.first)
-				// 	return (iterator(&__TreeRoot, lowest));
-				// else if (__cmp(lowest->key.first, k) == false) //*  key.first < k
-				// {
-				// 	return (iterator(&__TreeRoot, lowest));
-				// 	lowest = lowest->left;
-				// }
-				// else if (__cmp(lowest->key.first, k) == true) //* key.first < k
-				// {
-				// 	lowest = lowest->right;
-				// }
 			}
-				return const_iterator(result);
-			// return (this->end());
+			return const_iterator(result);
 		}
 
 		iterator	upper_bound(const key_type& k)
@@ -460,46 +386,20 @@ namespace ft
 		{
 			return allocator_type();
 		};
-		// iterator	find(const key_type& k)
-		// {
-		// 	typename AvlBST<value_type, key_compare, Alloc>::Node*	temp;
 
-		// 	temp = __TreeRoot.searchNode(__TreeRoot.__root, k);
-		// 	if (temp)
-		// 		return (iterator(AvlBST<value_type, key_compare, Alloc>(__TreeRoot.__root, temp)));
-			
-		// 		return iterator(AvlBST<value_type, key_compare, Alloc>());
-		// }
-
-
-
-	// 	template <class Key_, class T_, class Compare_, class Alloc_>
-	// friend bool operator== ( const map<Key_,T_,Compare_,Alloc_>& lhs, const map<Key_,T_,Compare_,Alloc_>& rhs ){
-	// 	if (lhs.size() == rhs.size() && ft::equal(lhs.begin(), lhs.end(), rhs.begin()))
-	// 		return (true);
-	// 	return (false);
-	// }
-
-
-
-		//! Currently they're public for testing only.
-		//TODO: return it private after finishing tests.
-		public:
+		private:
 			__AllocAVL										__allocAVL;
 			size_t											__Size;
 			AvlBST<value_type, key_compare, Alloc>			*__TreeRoot;
-			// size_t			__Capacity; //<==== Not sure if there's a Capacity counter since it's a BST.
 			allocator_type									__Alloc;
 			key_compare										__cmp;
 
 	};
+
 	template< class Key, class T, class Compare, class Alloc >
 	bool operator==( const ft::map<Key,T,Compare,Alloc>& lhs, const ft::map<Key,T,Compare,Alloc>& rhs )
 	{
 		return (lhs.size() == rhs.size() && ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
-		// if (lhs.size() == rhs.size() && ft::equal(lhs.begin(), lhs.end(), rhs.begin()))
-		// 	return (true);
-		// return (false);
 	};
 	
 	template< class Key, class T, class Compare, class Alloc >

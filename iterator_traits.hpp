@@ -52,18 +52,7 @@ namespace ft
 	struct is_integral<double>: public std::true_type {};
 	template <>
 	struct is_integral<long double>: public std::true_type {};
-
-	// //* The base class for all the iterators.
-	// template <class Category, class T, class Distance = ptrdiff_t,
-	//           class Pointer = T*, class Reference = T&>
-	//   struct iteratorBase {
-	//     typedef T         value_type;
-	//     typedef Distance  difference_type;
-	//     typedef Pointer   pointer;
-	//     typedef Reference reference;
-	//     typedef Category  iterator_category;
-	//   };
-
+	
 	template <class InputIterator1, class InputIterator2>
 	bool equal(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2)
 	{

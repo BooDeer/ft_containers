@@ -32,33 +32,6 @@ class AvlBST
 			}
 			return p;
 		};
-		// Node* next_node(Node* re_node) const
-		// {
-		// 	Node* tmp;
-		// 	if(re_node->right != nullptr)
-		// 	{
-		// 		// if has right go to most left
-		// 		re_node = re_node->right;
-		// 		re_node = min_node(re_node);
-		// 	}
-		// 	else
-		// 	{
-		// 		//if not, return to parent
-		// 		tmp = re_node->par;
-		// 		while (tmp != NULL && re_node == tmp->right)
-		// 		{
-		// 			re_node = tmp;
-		// 			tmp = tmp->par;
-		// 		}
-		// 		// if right-most
-		// 		re_node = tmp;
-		// 	}
-		// 	// if(re_node == nullptr)
-		// 	// {
-		// 		// re_node = last_node;
-		// 	// }
-		// 	return re_node;
-		// };
 
 		Node*	past_node(Node* node) const
 		{
@@ -531,176 +504,6 @@ class AvlBST
     }
 	struct Node*	eraseNode(Node* root, value_type key)
 	{
-
-		// if (root != NULL)
-		// {
-		// 	if (__cmp(root->key.first, key))
-		// 		eraseNode(root->right, key);
-		// 	else if (compare(key, root->key.first))
-		// 		eraseNode(root->left, key);
-		// 	else
-		// 	{
-		// 		if (root->right == NULL && root->left == NULL) //? Try changing this with corresponding height
-		// 		{
-		// 			__alloc.destroy(root);
-		// 			__alloc.deallocate(root, 1);
-		// 			root = NULL;
-		// 		}
-		// 		else if (root->right == NULL || root->left == NULL)
-		// 		{
-		// 			Node* temp = root->left ? root->left : root->right;
-		// 			Node* tempar = root->par;
-
-		// 			temp->par = root->par;
-		// 			__alloc.destroy(root);
-		// 			__alloc.deallocate(root, 1);
-		// 			root = NULL;
-
-		// 			if (tempar && __cmp(temp->key.first, tempar->key.first))
-		// 				tempar->right = temp;
-		// 			else if (tempar && __cmp(temp->key.first, tempar->key.first))
-		// 				tempar->left = temp;
-		// 			else
-		// 				root = temp;
-		// 		}
-		// 		else if (root->left && root->right)
-		// 		{
-		// 			swap_wnext(root);
-		// 			eraseNode(root->left, key);
-		// 		}
-		// 	}
-		// 	if (!root)
-		// 	{
-		// 		return ;
-		// 	}
-		// 	Updateheight(root);
-		// 	Balance(root);
-		// }
-
-		// if (root != NULL) {
-		// 	// If the node is found
-		// 	if (root->key.first == key.first)
-		// 	{
-		// 		if (root->right == NULL && root->left != NULL)
-		// 		{
-		// 			if (root->par != NULL)
-		// 			{
-		// 				if (root->par->key.first < root->key.first)
-		// 					root->par->right = root->left;
-		// 				else
-		// 					root->par->left = root->left;
-		// 				Updateheight(root->par);
-		// 			}
-		// 			root->left->par = root->par;
-		// 			root->left = Balance(root->left);
-		// 			return root->left;
-		// 		}
-		// 		else if (root->left == NULL	&& root->right != NULL)
-		// 	{
-		// 			if (root->par != NULL)
-		// 			{
-		// 				if (root->par->key.first < root->key.first)
-		// 					root->par->right = root->right;
-		// 				else
-		// 					root->par->left = root->right;
-		// 				Updateheight(root->par);
-		// 			}
-		// 			root->right->par = root->par;
-		// 			root->right = Balance(root->right);
-		// 			return root->right;
-		// 		}
-		// 		else if (root->left == NULL && root->right == NULL)
-		// 		{
-		// 			if (root-> par == NULL)
-		// 			{
-		// 				__alloc.destroy(root);
-		// 				__alloc.deallocate(root, 1);
-		// 				root = NULL;
-		// 			}
-		// 			else if (root->par->key.first < root->key.first)
-		// 			{
-		// 				root->par->right = NULL;
-		// 			}
-		// 			else
-		// 			{
-		// 				root->par->left = NULL;
-		// 			}
-	
-		// 			if (root && root->par != NULL)
-		// 				Updateheight(root->par);
-	
-		// 			root = NULL;
-		// 			return NULL;
-		// 		}
-		// 		else(root->right != NULL)
-		// 		{
-		// 			struct Node* tmpnode = root;
-		// 			tmpnode = tmpnode->right;
-		// 			while (tmpnode->left != NULL)
-		// 			{
-		// 				tmpnode = tmpnode->left;
-		// 			}
-	
-		// 			// value_type val = tmpnode->key;
-		// 			root->right = eraseNode(root->right, tmpnode->key);
-	
-	
-		// 			// root->key = val;
-		// 			tmpnode->par = root->par;
-		// 			tmpnode->right = root->right;
-		// 			tmpnode->left = root->left;
-		// 			tmpnode->height = root->height;
-		// 			// __alloc.destroy(root);
-		// 			// __alloc.deallocate(root, 1);
-		// 			root = __alloc.allocate(1);
-		// 			__alloc.construct(root,Node(tmpnode->par, tmpnode->right, tmpnode->left, tmpnode->key.first, tmpnode->key.second, tmpnode->height));
-		// 			// Node(root->par, root->right, root->left, tmpnode->key.first, tmpnode->key.second, root->height);
-		// 			root = Balance(root);
-		// 		}
-		// 		// else if (root->left != NULL)
-		// 		// {
-		// 		// 	struct Node* tmpnode = root;
-		// 		// 	tmpnode = tmpnode->left;
-		// 		// 	while (tmpnode->right != NULL)
-		// 		// 	{
-		// 		// 		tmpnode = tmpnode->right;
-		// 		// 	}
-	
-		// 		// 	// value_type val = tmpnode->key;
-		// 		// 	root->left = eraseNode(root->left, tmpnode->key);
-	
-	
-		// 		// 	// root->key = val;
-		// 		// 	tmpnode->par = root->par;
-		// 		// 	tmpnode->right = root->right;
-		// 		// 	tmpnode->left = root->left;
-		// 		// 	tmpnode->height = root->height;
-		// 		// 	// __alloc.destroy(root);
-		// 		// 	// __alloc.deallocate(root, 1);
-		// 		// 	root = __alloc.allocate(1);
-		// 		// 	__alloc.construct(root,Node(tmpnode->par, tmpnode->right, tmpnode->left, tmpnode->key.first, tmpnode->key.second, tmpnode->height));
-		// 		// 	// Node(root->par, root->right, root->left, tmpnode->key.first, tmpnode->key.second, root->height);
-		// 		// 	root = Balance(root);
-		// 		// }
-		// 	}
-		// 	else if (root->key.first < key.first)
-		// 	{
-		// 		root->right = eraseNode(root->right, key);
-	
-		// 		root = Balance(root);
-		// 	}
-		// 	else if (root->key.first > key.first)
-		// 	{
-		// 		root->left = eraseNode(root->left, key);
-	
-		// 		root = Balance(root);
-		// 	}
-		// if (root != NULL)
-		// {
-		// 	Updateheight(root);
-		// }
-		// }
-		// return root;
 		if(root == NULL)
         {
             // is_del = false;
@@ -729,7 +532,6 @@ class AvlBST
                 this->__alloc.destroy(root); // destroy old node
                 this->__alloc.deallocate(root, 1);
                 root  = this->__alloc.allocate(1);
-		// Node(Node *p, Node *r, Node *l, first_type k1,second_type k2, int h): par(p), right(r), left(l), key(k1, k2), height(h) {};
 
                 this->__alloc.construct(root, Node(tmp_pa, tmp_r, tmp_l, tmp->key.first, tmp->key.second, tmp_h)); // copy hieght and parent ........
                 root->left =  eraseNode(root->left , tmp->key); // delete next node
@@ -744,7 +546,6 @@ class AvlBST
                 this->__alloc.destroy(root); // destroy old node
                 this->__alloc.deallocate(root, 1);
                 root  = this->__alloc.allocate(1);
-				// this->__alloc.construct(r, node<value_type>(tmp->pt.first, tmp->pt.second, tmp_pa, tmp_r, tmp_l, tmp_h));
                 this->__alloc.construct(root, Node(tmp_pa, tmp_r, tmp_l, tmp->key.first, tmp->key.second, tmp_h)); // copy hieght and parent ........
                 root->right = eraseNode(root->right , tmp->key); // delete next node
             }
@@ -825,7 +626,6 @@ class AvlBST
 			if (root == NULL)
 				return root;
 			Node*	copy = __alloc.allocate(1);
-			// __alloc.construct(root, Node(NULL, NULL, NULL, key.first, key.second, 0));
 
 			__alloc.construct(copy, Node(NULL, NULL, NULL, root->key.first, root->key.second, 0));
 			copy->height	= root->height;
@@ -837,12 +637,9 @@ class AvlBST
 
 		void	noodles_destroyer(Node *noodle)
 		{
-			// LOG("address of value: " << noodle->key.first << " is " << noodle);
 			if (noodle == NULL)
 				return;
 			
-			// LOG(noodle->key.first);
-			// LOG("Parent of value: " << noodle->key.first);
 			__alloc.destroy(noodle);
 			__alloc.deallocate(noodle, 1);
 			if (noodle->left)
@@ -880,8 +677,6 @@ class AvlBST
 				this->mv_ch		= copy_helper(copy, NULL);
 			else
 				this->mv_ch		= end;
-			// LOG("===========================================================");
-			// LOG("-->" << this->mv_ch << " vs -->" << end);
 			this->end_node	= end;
 		};
 		//* Assignement operator. Should be a deep copy not shallow.
@@ -1013,12 +808,7 @@ class AvlBST
 				mv_ch = end_node;
 			return mv_ch;
 		}
-		// AvlBST& operator++(int)
-		// {
-		// 	AvlBST	tmp(*this);
-		// 	++(*this);
-		// 	return tmp;
-		// }
+
 		AvlBST& operator--()
 		{
 			if (mv_ch == end_node)
