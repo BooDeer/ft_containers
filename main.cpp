@@ -6,7 +6,7 @@
 /*   By: hboudhir <hboudhir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/08 14:54:59 by hboudhir          #+#    #+#             */
-/*   Updated: 2022/03/16 10:51:24 by hboudhir         ###   ########.fr       */
+/*   Updated: 2022/03/16 18:11:28 by hboudhir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ int main( void )
             // time_t start, end, diff;
 			ft::map<int, int>				mapT;
 			ft::map<int, int>::iterator	it;
-
+			ft::vector<int>					VecT;
 			// insert some values:
 			// mapT.insert(ft::make_pair(1, 10));
 			// mapT.insert(ft::make_pair(2, 20));

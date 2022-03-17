@@ -82,10 +82,6 @@ namespace ft{
 					this->push_back(*first);
 					++first;
 				}
-				// ptrdiff_t dist = std::distance(first, last);
-				// __Capacity = dist;
-				// __Vec = __Alloc.allocate(__Capacity);
-				// this->assign(first, last);
 			};
 
 			//* The copy constructor.
@@ -391,72 +387,46 @@ namespace ft{
 				__Size++;
 			};
 
+
+			//! Redo. (shouldn't deallocate)
 			template<class InputIterator>
 			void			assign(InputIterator first, InputIterator last,
 							typename std::enable_if<!std::is_integral<InputIterator>::value, InputIterator>::type* = nullptr)
 			{
 				std::ptrdiff_t distance = std::distance(first, last);
-				if (distance != 0)
+				std::ptrdiff_t in = 0;
+
+				if (__Capacity >= (size_t)distance)
 				{
+					while (first != last)
+					{
+						if (__Size > (size_t)in)
+							__Alloc.destroy(__Vec + in);
+						++first;
+						++in;
+					}
+					__Size = distance;
+				}
+				else
+				{
+					pointer temp = __Alloc.allocate(distance);
 					for(size_t i = 0; i < __Size; i++)
 						__Alloc.destroy(__Vec + i);
-					__Alloc.deallocate(__Vec, __Capacity);
+					if (__Capacity)
+						__Alloc.deallocate(__Vec, __Capacity);
 					__Size = distance;
-					if ((size_t)distance > __Capacity)
-						__Capacity = __Size;
-					pointer temp = __Alloc.allocate(__Capacity);
-					int i = 0;
-					for (; first != last; first++)
+					__Capacity = distance;
+					in = 0;
+					while(first != last)
 					{
-						__Alloc.construct(temp + i, *first);
-						i++;
+						__Alloc.construct(temp + in, *first);
+						++first;
+						++in;
 					}
 					__Vec = temp;
 				}
-				else
-					__Size = 0;
-				// if ((size_t)distance > __Capacity)
-				// {
-				// 	__Capacity *= 2;
-				// 	if (!__Capacity)
-				// 		__Capacity = distance;
-				// 	__Alloc.deallocate(__Vec, __Capacity);
-				// 	__Vec = __Alloc.allocate(__Capacity);
-				// }
-
-				// for (difference_type i = 0; i < distance; i++)
-				// {
-				// 	if ((size_t)i < __Size)
-				// 		__Alloc.destroy(__Vec + i);
-				// 	__Alloc.construct(__Vec + i, first[i]);
-				// }
-				// __Size = distance;
 			};
-	// 			template <class InputIterator>
-  	// void assign (InputIterator first, InputIterator last, typename ft::enable_if<!is_integral<InputIterator>::value, InputIterator>::type = InputIterator()) //range
-	// {
-	// 	difference_type ds = std::distance(first, last);
-	// 	if (ds != 0)
-	// 	{
-	// 		// destory and dealocate dy_arr
-	// 		for(int i = 0; i < _size; i++)
-	// 			alloc.destroy(dy_arr + i);
-	// 		alloc.deallocate(dy_arr, _capacity);
-	// 		_size = ds;
-	// 		if (ds > _capacity)
-	// 			_capacity = _size;
-	// 		pointer tmp = alloc.allocate(_capacity);
-	// 		int  i = 0;
-	// 		for(; first != last; first++)
-	// 		{
-	// 			alloc.construct(tmp + i, *first);
-	// 			i++;
-	// 		}
-	// 		dy_arr =  tmp;
-	// 	}
-	// 	else 
-	// 		_size = 0;
-	// }
+		
 			//* Assigns new contents to the vector, replacing its current contents, and modifying its size accordingly.
 			void			assign(size_type n, const value_type &val)
 			{
@@ -485,7 +455,6 @@ namespace ft{
 
 		//! Allocator member function
 		public:
-			//? Not sure if this is correct or not, to be checked later :D
 			allocator_type get_allocator() const
 			{
 				return allocator_type(__Alloc);
