@@ -1,13 +1,13 @@
 #pragma once
 
 #include <iostream>
-#include "utility.hpp"
-#include "mapIterator.hpp"
-#include "avlBST.hpp"
-#include "reverse_iterator.hpp"
-#include "vector.hpp"
 #include <unistd.h>
-#include "iterator_traits.hpp"
+#include "../Utils/utility.hpp"
+#include "../Iterators/mapIterator.hpp"
+#include "../Iterators/avlBST.hpp"
+#include "../Iterators/reverse_iterator.hpp"
+#include "vector.hpp"
+#include "../Iterators/iterator_traits.hpp"
 namespace ft
 {
 
@@ -219,7 +219,7 @@ namespace ft
 
 		void erase (iterator first, iterator last)
 		{
-			std::vector<key_type> temp;
+			ft::vector<key_type> temp;
 			while (first != last)
 			{
 				temp.push_back(first->first);

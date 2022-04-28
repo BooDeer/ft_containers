@@ -3,8 +3,8 @@
 #include <iostream>
 #include <memory>
 #include <math.h>
-#include "iterator.hpp"
-#include "reverse_iterator.hpp"
+#include "../Iterators/iterator.hpp"
+#include "../Iterators/reverse_iterator.hpp"
 
 
 namespace ft{
@@ -25,7 +25,7 @@ namespace ft{
 			//! Typedefs only create a new alias for an existing type, you need to create a variable to hold that type before using it
 
 			typedef T												value_type; 		//* First parametre of the templated class. (T)
-			typedef const T											const_value_type; 		//* First parametre of the templated class. (T)
+			typedef const T											const_value_type; 	//* First parametre of the templated class but const. (const T)
 
 			typedef Alloc											allocator_type; 	//* Second parametre of the templated class. (Alloc used to allocate memory)
 			typedef	typename allocator_type::reference				reference; 			//* Reference to the allocator_type. (Equal to T&)
@@ -62,14 +62,11 @@ namespace ft{
 			};
 
 			//* The range constructor.
-			//TODO: implement the range constructor.
 			template <class InputIterator>
         	vector (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type(),
 							typename std::enable_if<!std::is_integral<InputIterator>::value, InputIterator>::type* = nullptr)
 							: __Vec(nullptr), __Size(0), __Capacity(0), __Alloc(alloc)
 			{
-				//? Which one should I use (without std::distance it fail in the case of set operator)
-				// __Capacity = std::distance(first, last);
 				size_type j = 0;
 				InputIterator firs1 = first;
 				InputIterator last1 = last;
@@ -87,11 +84,9 @@ namespace ft{
 			//* The copy constructor.
 			vector(const vector& x): __Vec(nullptr), __Size(0), __Capacity(0), __Alloc(allocator_type())
 			{
-				//TODO: implement the assignement operator.
 				*this = x;
 			}
 
-			// vector(const vector& src);
 			vector& operator=(const vector& rhs)
 			{
 				if (__Size > 0)
@@ -109,7 +104,6 @@ namespace ft{
 			};
 			~vector( void )
 			{
-				//TODO: implement the fucking destructor.
 				if (__Vec != nullptr)
 				{
 					for (size_t i = 0; i < __Size; i++)
@@ -200,7 +194,7 @@ namespace ft{
 			};
 			bool		empty() const
 			{
-				return __Size ? false : true; //! Still not tested.
+				return __Size ? false : true;
 			};
 			size_type	capacity() const
 			{
@@ -287,7 +281,7 @@ namespace ft{
 				__Size--;
 				__Alloc.destroy(__Vec + distance);
 				for(size_t i = distance; i < __Size; i++)
-					__Alloc.construct(__Vec + i, __Vec[i + 1]); //?? __Vec[i] = __Vec[i + 1];
+					__Alloc.construct(__Vec + i, __Vec[i + 1]);
 				// __Alloc.destroy(__Vec + __Size +);
 				return (iterator(__Vec + distance));
 			};
@@ -388,7 +382,6 @@ namespace ft{
 			};
 
 
-			//! Redo. (shouldn't deallocate)
 			template<class InputIterator>
 			void			assign(InputIterator first, InputIterator last,
 							typename std::enable_if<!std::is_integral<InputIterator>::value, InputIterator>::type* = nullptr)
@@ -459,6 +452,7 @@ namespace ft{
 			{
 				return allocator_type(__Alloc);
 			};
+		//!=========================================
 
 		public:
 

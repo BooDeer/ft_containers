@@ -1,7 +1,8 @@
 #pragma once
 
 #include <iostream>
-#include "utility.hpp"
+#include "../Utils/utility.hpp"
+
 template <class __T, class __Compare, class Allocator = std::allocator<__T> >
 class AvlBST
 {
@@ -11,11 +12,11 @@ class AvlBST
 		typedef typename __T::first_type		first_type;
 		typedef typename __T::second_type		second_type;
 		//? Is the parent node needed?
-		Node				*par;				//* The parent node.
-		Node				*right;				//* The right child node.
-		Node				*left;				//* The left child node.
-		__T					key;				//* The key hold by the node.
-		int					height;				//* The height of the node.
+		Node				*par;
+		Node				*right;
+		Node				*left;
+		__T					key;
+		int					height;
 		__Compare			_cmp;
 		Node(__T val): key(val) {};
 		Node(Node *p, Node *r, Node *l, first_type k1,second_type k2, int h): par(p), right(r), left(l), key(k1, k2), height(h) {};
@@ -291,7 +292,6 @@ class AvlBST
 	// Function to handle Left Right Case
 	struct Node* LRR(struct Node* root)
 	{
-		// LOG("LRR");
 		root->left = RRR(root->left);
 		return LLR(root);
 	}
@@ -299,7 +299,6 @@ class AvlBST
 	// Function to handle right left case
 	struct Node* RLR(struct Node* root)
 	{
-		// LOG("RLR");
 		root->right = LLR(root->right);
 		return RRR(root);
 	}
@@ -359,7 +358,6 @@ class AvlBST
 		if (root == NULL) {
 			root = __alloc.allocate(1);
 			__alloc.construct(root, Node(NULL, NULL, NULL, key.first, key.second, 0));
-			// LOG("Memory allocated for the value: " << key.first << " is " << root);
 			root->height = 1;
 			root->left = NULL;
 			root->right = NULL;
@@ -409,9 +407,6 @@ class AvlBST
 				}
 			}
 		}
-		// else {
-		// 	pair_ret = (ft::make_pair(root, true));
-		// }
 		Updateheight(root);
 		return pair_ret;
 	}
@@ -425,14 +420,9 @@ class AvlBST
 
 			std::cout << (isLeft ? "├──" : "└──" );
 
-			// print the value of the node
-			// std::cout << node->key.second << "address:" << node;
 			std::cout << node->key.first;
-			// if (node->par)
-				// std::cout << "p:" << node->par->key.second;
 			std::cout << std::endl;
 
-			// enter the next tree level - left and right branch
 			printBT( prefix + (isLeft ? "│   " : "    "), node->left, true);
 			printBT( prefix + (isLeft ? "│   " : "    "), node->right, false);
 		}
@@ -595,9 +585,7 @@ class AvlBST
 				root->right->par = root;
 		return root;
 	}
-	//! ===========================================================
 
-	//! ===========================================================
 	public:
 		void printBT( void )
 		{
@@ -606,10 +594,7 @@ class AvlBST
 
 		ft::pair<Node*, bool> insertNode(value_type key)
 		{
-			// if (this->searchNode(__root, key))
-			// 	return false;
 			return insertNode(__root, NULL, key);
-			// return true;
 		}
 
 		void deleteNode(value_type key)
@@ -657,9 +642,8 @@ class AvlBST
 			noodles_destroyer(__root);
 			noodles_destroyer(mv_ch);
 		}
-	//! AvlBSt canonical form
 	public:
-		//* Copy contructor.
+
 		AvlBST( const AvlBST& src )
 		{
 			*this = src;
@@ -670,6 +654,7 @@ class AvlBST
 			this->__root	= copy_helper(root, NULL);
 			this->mv_ch		= copy_helper(copy, NULL);
 		};
+
 		AvlBST(Node *root, Node* copy, Node *end)
 		{
 			this->__root	= copy_helper(root, NULL);
@@ -679,10 +664,9 @@ class AvlBST
 				this->mv_ch		= end;
 			this->end_node	= end;
 		};
-		//* Assignement operator. Should be a deep copy not shallow.
+
 		AvlBST& operator=( const AvlBST& rhs)
 		{
-			//TODO: should copy a whole new tree instead of just one node.
 			__alloc	= rhs.__alloc;
 			__cmp	= rhs.__cmp;
 			__root	= copy_helper(rhs.__root, NULL);
@@ -696,12 +680,8 @@ class AvlBST
 			return *this;
 		};
 		//* Destructor
-		~AvlBST( void )
-		{
-			// LOG("Reached here");
-			//TODO: to be implemented.
-			// destroy_noodles();
-		};
+		~AvlBST( void ) {};
+
 		Node*	begin()
 		{
 			return minValue();
@@ -792,14 +772,12 @@ class AvlBST
 			}
 		}
 
-	//! Insertion methods.
 	public:
 		//* Default constructor.
 		AvlBST( const allocator_type& alloc = allocator_type() ): __root(NULL), mv_ch(NULL), __alloc(alloc) {
 			end_node = __alloc.allocate(1);
 		};
 
-	//! Arithmetic operators.
 	public:
 		Node* operator++()
 		{
@@ -843,16 +821,10 @@ class AvlBST
 		}
 	//! ======================================================================================
 	public:
-		//? Should I keep the default constructor private or not?
-		//* Private attributes.
-		Node								*__root; //* The head of the BST.
-		Node								*mv_ch; //* Aka moving child, a sub node that may change. (during the arithmetic operations)
+		Node								*__root;
+		Node								*mv_ch;
 		Node								*end_node;
 		__Compare							__cmp;
 		Allocator							allocPAIR;
 		__allocTy							__alloc;
 };
-
-
-
-// pass 	the root node of your binary tree
